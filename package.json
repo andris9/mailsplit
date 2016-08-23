@@ -1,0 +1,19 @@
+{
+  "name": "messagesplitter",
+  "version": "1.0.0",
+  "description": "Split EML messages into an object stream",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "grunt"
+  },
+  "author": "Andris Reinman",
+  "license": "MIT",
+  "dependencies": {
+    "libbase64": "^0.1.0",
+    "libmime": "^2.0.3",
+    "libqp": "^1.1.0"
+  }
+}
