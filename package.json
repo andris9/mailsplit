@@ -15,5 +15,11 @@
     "libbase64": "^0.1.0",
     "libmime": "^2.0.3",
     "libqp": "^1.1.0"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-eslint": "^19.0.0"
   }
 }
