@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "libbase64": "^0.1.0",
-    "libmime": "^2.0.3",
+    "libmime": "^2.1.0",
     "libqp": "^1.1.0"
   },
   "devDependencies": {

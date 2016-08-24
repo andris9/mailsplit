@@ -1,6 +1,8 @@
 'use strict';
 
+const fs = require('fs');
 const MessageSplitter = require('../lib/message-splitter');
+const MessageJoiner = require('../lib/message-joiner');
 
 module.exports['Split simple message'] = test => {
 
@@ -43,7 +45,7 @@ module.exports['Split multipart message'] = test => {
         },
         data => {
             test.equal(data.type, 'data');
-            test.equal(data.value.toString(), '--ABC\r\n');
+            test.equal(data.value.toString(), '--ABC\n');
         },
         data => {
             test.equal(data.type, 'node');
@@ -51,11 +53,11 @@ module.exports['Split multipart message'] = test => {
         },
         data => {
             test.equal(data.type, 'body');
-            test.equal(data.value.toString(), 'AAECAwQFBg==\r\n');
+            test.equal(data.value.toString(), 'AAECAwQFBg==');
         },
         data => {
             test.equal(data.type, 'data');
-            test.equal(data.value.toString(), '--ABC--');
+            test.equal(data.value.toString(), '\r\n--ABC--');
         }
     ];
 
@@ -69,16 +71,39 @@ module.exports['Split multipart message'] = test => {
         test.done();
     });
 
-    test.ok(true);
     splitter.end(Buffer.from('Content-type: multipart/mixed; boundary=ABC\r\n' +
         'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
         'Subject: ABCDEF\r\n' +
         '\r\n' +
-        '--ABC\r\n' +
+        '--ABC\n' +
         'Content-Type: application/octet-stream\r\n' +
         'Content-Transfer-Encoding: base64\r\n' +
         'Content-Disposition: attachment; filename=\'test.pdf\'\r\n' +
         '\r\n' +
         'AAECAwQFBg==\r\n' +
         '--ABC--'));
+};
+
+
+module.exports['Split and join mimetorture message'] = test => {
+
+    let data = fs.readFileSync(__dirname + '/fixtures/mimetorture.eml');
+
+    let splitter = new MessageSplitter();
+    let joiner = new MessageJoiner();
+
+    let chunks = [];
+
+    joiner.on('data', chunk => {
+        chunks.push(chunk);
+    });
+
+    joiner.on('end', () => {
+        test.equal(data.toString('binary'), Buffer.concat(chunks).toString('binary'));
+        test.done();
+    });
+
+
+    fs.createReadStream(__dirname + '/fixtures/mimetorture.eml').pipe(splitter).pipe(joiner);
+
 };
