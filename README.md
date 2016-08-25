@@ -1,17 +1,17 @@
 # mailsplit
 
-Split an email message stream into parts and join these parts back into an email message. If you do not modifying anything then the rebuilt message should be an exact copy of the original.
+Split an email message stream into structured parts and join these parts back into an email message stream. If you do not modify the parsed data then the rebuilt message should be an exact copy of the original.
 
 This is useful if you want to modify some specific parts of an email, for example to add tracking images or unsubscribe links to the HTML part of the message without changing any other parts of the email.
 
-This module is a primitive for building other e-mail handling stuff.
-
 Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (or mixed) line endings. Embedded rfc822 messages are also parsed, in this case you would get two sequential 'node' objects with no 'data' or 'body' in  between (first 'node' is for the container node and second for the root node of the embedded message).
+
+In general this module is a primitive for building other e-mail handling stuff.
 
 ## Data objects
 
   * **type**
-    * `'node'` means that we entered into next mime node and the previous one is now processed
+    * `'node'` means that we reached the next mime node and the previous one is completely processed
     * `'data'` provides us multipart body parts, including boundaries. This data is not directly related to any specific multipart node, basically it includes everything between the end of one normal node and the header of next node
     * `'body'` provides us next chunk for the last seen `'node'` element
   * **value** is a buffer value for `'body'` and `'data'` parts
@@ -64,9 +64,11 @@ If the data object has `type='node'` then it also has a `headers` object propert
 
 Additionally you can check the details of the node with the following properties automatically parsed from the headers:
 
+  * **node.root** if true then it means this is the message root, so this node should contain Subject, From, To etc. headers
   * **node.contentType** returns the mime type of the node (eg. 'text/html')
   * **node.charset** returns the charset of the node as defined in 'Content-Type' header (eg. 'UTF-8') or false if not defined
   * **node.encoding** returns the Transfer-Encoding value (eg. 'base64' or 'quoted-printable') or false if not defined
+  * **node.multipart** if has value, then this is a multipart node (does not have 'body' parts)
 
 ### Join parsed message stream
 
