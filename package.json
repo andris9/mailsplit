@@ -1,7 +1,7 @@
 {
   "name": "mailsplit",
   "version": "1.0.0",
-  "description": "Split EML messages into an object stream",
+  "description": "Split email messages into an object stream",
   "main": "index.js",
   "directories": {
     "test": "test"
