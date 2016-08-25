@@ -18,6 +18,7 @@ module.exports['Split simple message'] = test => {
             test.equal(data.value.toString(), 'Hello world!');
         }
     ];
+    test.expect(6);
 
     splitter.on('data', data => {
         let nextTest = tests.shift();
@@ -29,9 +30,116 @@ module.exports['Split simple message'] = test => {
         test.done();
     });
 
-    test.ok(true);
     splitter.end('Subject: test\nMime-Version: 1.0\n\nHello world!');
 
+};
+
+module.exports['Split message with header only 1'] = test => {
+
+    let splitter = new MessageSplitter();
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Subject: test\nMime-Version: 1.0');
+        }
+    ];
+    test.expect(3);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end('Subject: test\nMime-Version: 1.0');
+};
+
+module.exports['Split message with header only 2'] = test => {
+
+    let splitter = new MessageSplitter();
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Subject: test\nMime-Version: 1.0\n');
+        }
+    ];
+    test.expect(3);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end('Subject: test\nMime-Version: 1.0\n');
+};
+
+module.exports['Split message with empty body'] = test => {
+
+    let splitter = new MessageSplitter();
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Subject: test\nMime-Version: 1.0\n\n');
+        },
+        data => {
+            test.equal(data.type, 'body');
+            test.equal(data.value.toString(), '');
+        }
+    ];
+    test.expect(6);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end('Subject: test\nMime-Version: 1.0\n\n');
+};
+
+module.exports['Split message with no header'] = test => {
+
+    let splitter = new MessageSplitter();
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), '\n');
+        },
+        data => {
+            test.equal(data.type, 'body');
+            test.equal(data.value.toString(), 'Hello world!');
+        }
+    ];
+    test.expect(6);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end('\nHello world!');
 };
 
 module.exports['Split multipart message'] = test => {
@@ -60,6 +168,7 @@ module.exports['Split multipart message'] = test => {
             test.equal(data.value.toString(), '\r\n--ABC--');
         }
     ];
+    test.expect(15);
 
     splitter.on('data', data => {
         let nextTest = tests.shift();
@@ -84,7 +193,6 @@ module.exports['Split multipart message'] = test => {
         '--ABC--'));
 };
 
-
 module.exports['Split and join mimetorture message'] = test => {
 
     let data = fs.readFileSync(__dirname + '/fixtures/mimetorture.eml');
@@ -103,7 +211,5 @@ module.exports['Split and join mimetorture message'] = test => {
         test.done();
     });
 
-
     fs.createReadStream(__dirname + '/fixtures/mimetorture.eml').pipe(splitter).pipe(joiner);
-
 };

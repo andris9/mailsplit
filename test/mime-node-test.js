@@ -10,7 +10,7 @@ module.exports['Add and parse headers'] = test => {
     mimeNode._addHeaderLine(Buffer.from('X-Mailer: 12345\r\n'));
     mimeNode._addHeaderLine(Buffer.from('\r\n'));
 
-    mimeNode._parseHeaders();
+    mimeNode.parseHeaders();
 
     test.equal(mimeNode.getHeaders().toString(), 'Subject: test\r\n jne\r\nX-Mailer: 12345\r\n\r\n');
 
@@ -27,7 +27,7 @@ module.exports['Update Content-Type'] = test => {
     mimeNode._addHeaderLine(Buffer.from('X-Mailer: 12345\r\n'));
     mimeNode._addHeaderLine(Buffer.from('\r\n'));
 
-    mimeNode._parseHeaders();
+    mimeNode.parseHeaders();
 
     mimeNode.updateContentType('image/png');
 
