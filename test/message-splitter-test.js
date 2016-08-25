@@ -34,6 +34,36 @@ module.exports['Split simple message'] = test => {
 
 };
 
+module.exports['Split simple message with line ending'] = test => {
+
+    let splitter = new MessageSplitter();
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Subject: test\nMime-Version: 1.0\n\n');
+        },
+        data => {
+            test.equal(data.type, 'body');
+            test.equal(data.value.toString(), 'Hello world!\r\n');
+        }
+    ];
+    test.expect(6);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end('Subject: test\nMime-Version: 1.0\n\nHello world!\r\n');
+
+};
+
 module.exports['Split message with header only 1'] = test => {
 
     let splitter = new MessageSplitter();
@@ -92,13 +122,9 @@ module.exports['Split message with empty body'] = test => {
         data => {
             test.equal(data.type, 'node');
             test.equal(data.getHeaders().toString(), 'Subject: test\nMime-Version: 1.0\n\n');
-        },
-        data => {
-            test.equal(data.type, 'body');
-            test.equal(data.value.toString(), '');
         }
     ];
-    test.expect(6);
+    test.expect(3);
 
     splitter.on('data', data => {
         let nextTest = tests.shift();

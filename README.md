@@ -6,7 +6,17 @@ This is useful if you want to modify some specific parts of an email, for exampl
 
 This module is a primitive for building other e-mail handling stuff.
 
-Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (even mixed) line endings. Embedded rfc822 messages are also parsed, in this case you would get two sequential 'node' objects with no 'data' or 'body' in  between, first is for the container node and second for the root node of the embedded message.
+Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (or mixed) line endings. Embedded rfc822 messages are also parsed, in this case you would get two sequential 'node' objects with no 'data' or 'body' in  between (first 'node' is for the container node and second for the root node of the embedded message).
+
+## Data objects
+
+  * **type**
+    * `'node'` means that we entered into next mime node and the previous one is now processed
+    * `'data'` provides us multipart body parts, including boundaries. This data is not directly related to any specific multipart node, basically it includes everything between the end of one normal node and the header of next node
+    * `'body'` provides us next chunk for the last seen `'node'` element
+  * **value** is a buffer value for `'body'` and `'data'` parts
+  * **header** is an object for manipulating headers (see below)
+  * **getHeaders()** is a convenience method for returning all headers (including the terminating empty line) as a single buffer value. If you have modified the headers then these modifications are also included in the output
 
 ## Usage
 
@@ -40,6 +50,23 @@ splitter.on('data', (data)=>{
 // send data to the parser
 someMessagStream.pipe(splitter);
 ```
+
+### Manipulating headers
+
+If the data object has `type='node'` then it also has a `headers` object property. This object has several methods for manipulating header values
+
+  * **node.headers.getheaders()** returns a Buffer value with generated headers. If you have not modified the headers object in any way then you should get the exact copy of the original. In case you have done something (for example removed a key, or added a new header key), then all linebreaks are forced to &lt;CR&gt;&lt;LF&gt; even if the original headers used just &lt;LF&gt;
+  * **node.headers.getFirst(key)** returns an array of strings with all header rows for the selected key (these are full header lines, so key name is part of the row string)
+  * **node.headers.get(key)** returns string value of the specified header key
+  * **node.headers.add(key, value [,index])** adds a new header value to the specified index or to the top of the header block if index is not specified
+  * **node.headers.update(key, value)** replaces a header value for the specified key
+  * **node.headers.delete(key)** remove header value
+
+Additionally you can check the details of the node with the following properties automatically parsed from the headers:
+
+  * **node.contentType** returns the mime type of the node (eg. 'text/html')
+  * **node.charset** returns the charset of the node as defined in 'Content-Type' header (eg. 'UTF-8') or false if not defined
+  * **node.encoding** returns the Transfer-Encoding value (eg. 'base64' or 'quoted-printable') or false if not defined
 
 ### Join parsed message stream
 

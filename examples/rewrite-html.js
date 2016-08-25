@@ -83,5 +83,4 @@ splitter.on('end', () => {
 
 joiner.pipe(process.stdout);
 
-// pipe message from file to splitter
 fs.createReadStream(__dirname + '/message.eml').pipe(splitter);
