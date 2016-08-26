@@ -6,7 +6,7 @@ This is useful if you want to modify some specific parts of an email, for exampl
 
 Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (or mixed) line endings. Embedded rfc822 messages are also parsed, in this case you would get two sequential 'node' objects with no 'data' or 'body' in  between (first 'node' is for the container node and second for the root node of the embedded message).
 
-In general this module is a primitive for building other e-mail handling stuff.
+In general this module is a primitive for building e-mail parsers/handlers. Alternatively you could use it to parse other MIME-like structures, for example *mbox* files or multipart/form-data uploads.
 
 See [rewrite-html.js](examples/rewrite-html.js) for an usage example where HTML content is modified on the fly (example script adds a link to every *text/html* node)
 
@@ -69,6 +69,8 @@ You can manipulate specific header keys as well using the `headers` object
   * **node.headers.add(key, value [,index])** adds a new header value to the specified index or to the top of the header block if index is not specified
   * **node.headers.update(key, value)** replaces a header value for the specified key
   * **node.headers.delete(key)** remove header value
+  * **node.headers.mbox** If this is a MBOX formatted message then this value holds the prefix line (eg. "From MAILER-DAEMON Fri Jul  8 12:08:34 2011")
+  * **node.headers.mbox** If this is a POST form-data then this value holds the HTTP prefix line (eg. "POST /upload.php HTTP/1.1")
 
 Additionally you can check the details of the node with the following properties automatically parsed from the headers:
 

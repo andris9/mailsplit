@@ -19,6 +19,23 @@ module.exports['Return modified headers'] = test => {
     test.done();
 };
 
+module.exports['Return original MBOX headers'] = test => {
+    let headerStr = 'From MAILER-DAEMON Fri Jul  8 12:08:34 2011\nSubject: test\nMIME-Version: 1.0\nMessage-ID: <abc@def>\n\n';
+    let headers = new Headers(Buffer.from(headerStr));
+    test.equal(headers.build().toString(), headerStr);
+    test.done();
+};
+
+module.exports['Return modified MBOX headers'] = test => {
+    let origHeaderStr = 'From MAILER-DAEMON Fri Jul  8 12:08:34 2011\nSubject: test\nMIME-Version: 1.0\nMessage-ID: <abc@def>\n\n';
+    let generatedHeaderStr = 'From MAILER-DAEMON Fri Jul  8 12:08:34 2011\r\nSubject: test\r\nMIME-Version: 1.0\r\nMessage-ID: <abc@def>\r\n\r\n';
+    let headers = new Headers(Buffer.from(origHeaderStr));
+    headers._parseHeaders();
+    headers.changed = true;
+    test.equal(headers.build().toString(), generatedHeaderStr);
+    test.done();
+};
+
 module.exports['Get specific headers'] = test => {
     let headerStr = 'Subject: test\nX-row: row1\nMIME-Version: 1.0\nX-Row: row2\nX-row: row3\nMessage-ID: <abc@def>\n\n';
     let headers = new Headers(Buffer.from(headerStr));

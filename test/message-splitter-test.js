@@ -294,8 +294,10 @@ module.exports['Fetch attachment from form-data'] = test => {
 
     let attachment = false;
     let hash = crypto.createHash('md5');
+    let msghash = crypto.createHash('md5');
 
     splitter.on('data', data => {
+        msghash.update(data.value || data.getHeaders());
         if (data.type === 'body' && attachment) {
             hash.update(data.value);
         } else {
@@ -307,6 +309,10 @@ module.exports['Fetch attachment from form-data'] = test => {
     });
 
     splitter.on('end', () => {
+        // check file hash
+        test.equal(msghash.digest('hex'), 'b6f36ec4e3985a93aee9047ea5c5e835');
+
+        // check attachment hash
         test.equal(hash.digest('hex'), '6c7388d43ad5961b5c042bfbeb25de99');
         test.done();
     });
