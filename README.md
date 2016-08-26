@@ -22,6 +22,12 @@ Element with type `'node'` has a bunch of header related methods and properties,
 
 ## Usage
 
+### Install
+
+Install from [npm](https://www.npmjs.com/package/mailsplit)
+
+    npm install mailsplit
+
 ### Split message stream
 
 `Splitter` is a transformable stream where input is a byte stream and output is an object stream.
