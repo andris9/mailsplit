@@ -8,7 +8,7 @@ Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (or mixed) line endings. Embed
 
 In general this module is a primitive for building other e-mail handling stuff.
 
-See (rewrite-html.js)[examples/rewrite-html.js] for an usage example where HTML content is modified on the fly (example script adds a link to every *text/html* node)
+See [rewrite-html.js](examples/rewrite-html.js) for an usage example where HTML content is modified on the fly (example script adds a link to every *text/html* node)
 
 ## Data objects
 
@@ -17,8 +17,8 @@ See (rewrite-html.js)[examples/rewrite-html.js] for an usage example where HTML 
     * `'data'` provides us multipart body parts, including boundaries. This data is not directly related to any specific multipart node, basically it includes everything between the end of one normal node and the header of next node
     * `'body'` provides us next chunk for the last seen `'node'` element
   * **value** is a buffer value for `'body'` and `'data'` parts
-  * **header** is an object for manipulating headers (see below)
-  * **getHeaders()** is a convenience method for returning all headers (including the terminating empty line) as a single buffer value. If you have modified the headers then these modifications are also included in the output
+
+Element with type `'node'` has a bunch of header related methods and properties, see [below](#manipulating-headers).
 
 ## Usage
 
