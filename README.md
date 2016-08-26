@@ -8,6 +8,8 @@ Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (or mixed) line endings. Embed
 
 In general this module is a primitive for building other e-mail handling stuff.
 
+See (rewrite-html.js)[examples/rewrite-html.js] for an usage example where HTML content is modified on the fly (example script adds a link to every *text/html* node)
+
 ## Data objects
 
   * **type**
@@ -53,11 +55,17 @@ someMessagStream.pipe(splitter);
 
 ### Manipulating headers
 
-If the data object has `type='node'` then it also has a `headers` object property. This object has several methods for manipulating header values
+If the data object has `type='node'` then you can modify headers for that node (headers can be modified until the data object is passed over to a `Joiner`)
 
-  * **node.headers.getheaders()** returns a Buffer value with generated headers. If you have not modified the headers object in any way then you should get the exact copy of the original. In case you have done something (for example removed a key, or added a new header key), then all linebreaks are forced to &lt;CR&gt;&lt;LF&gt; even if the original headers used just &lt;LF&gt;
-  * **node.headers.getFirst(key)** returns an array of strings with all header rows for the selected key (these are full header lines, so key name is part of the row string)
-  * **node.headers.get(key)** returns string value of the specified header key
+  * **node.getHeaders()** returns a Buffer value with generated headers. If you have not modified the headers object in any way then you should get the exact copy of the original. In case you have done something (for example removed a key, or added a new header key), then all linebreaks are forced to &lt;CR&gt;&lt;LF&gt; even if the original headers used just &lt;LF&gt;
+  * **node.setContentType(contentType)** sets or updates mime type for the node
+  * **node.setCharset(charset)** sets or updates character set in the Content-Type header
+  * **node.setFilename(filename)** sets or updates filename in the Content-Disposition header (unicode allowed)
+
+You can manipulate specific header keys as well using the `headers` object
+
+  * **node.headers.get(key)** returns an array of strings with all header rows for the selected key (these are full header lines, so key name is part of the row string, eg `["Subject: This is subject line"]`)
+  * **node.headers.getFirst(key)** returns string value of the specified header key (eg `"This is subject line"`)
   * **node.headers.add(key, value [,index])** adds a new header value to the specified index or to the top of the header block if index is not specified
   * **node.headers.update(key, value)** replaces a header value for the specified key
   * **node.headers.delete(key)** remove header value
@@ -66,13 +74,15 @@ Additionally you can check the details of the node with the following properties
 
   * **node.root** if true then it means this is the message root, so this node should contain Subject, From, To etc. headers
   * **node.contentType** returns the mime type of the node (eg. 'text/html')
+  * **node.disposition** either `'attachment'`, `'inline'` or `false` if not set
   * **node.charset** returns the charset of the node as defined in 'Content-Type' header (eg. 'UTF-8') or false if not defined
   * **node.encoding** returns the Transfer-Encoding value (eg. 'base64' or 'quoted-printable') or false if not defined
   * **node.multipart** if has value, then this is a multipart node (does not have 'body' parts)
+  * **node.filename** is set if the headers contain a filename value. This is decoded to unicode, so it is a normal string or false if not found
 
 ### Join parsed message stream
 
-`Joiner` is a transformable stream where input is the object stream form `Splitter` and output is a byte stream
+`Joiner` is a transformable stream where input is the object stream form `Splitter` and output is a byte stream.
 
 ```javascript
 let Splitter = require('mailsplit').Splitter;

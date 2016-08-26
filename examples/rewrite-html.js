@@ -1,86 +1,128 @@
 'use strict';
 
-// This example script reads a email message from a file as a stream and updates
-// text/html content where a link is added to the message
+// This example script reads a email message from a file as a stream and adds a link
+// to all text/html nodes
 
-let Splitter = require('../lib/message-splitter');
-let Joiner = require('../lib/message-joiner');
-let libqp = require('libqp');
-let libbase64 = require('libbase64');
+const Transform = require('stream').Transform;
+const Splitter = require('../lib/message-splitter');
+const Joiner = require('../lib/message-joiner');
+const fs = require('fs');
 
-let fs = require('fs');
+/**
+ * NodeRewriter Transform stream. Updates content for all nodes with specified mime type
+ *
+ * @constructor
+ * @param {String} mimeType Define the Mime-Type to look for
+ * @param {Function} rewriteAction Function to run with the node content
+ */
+class NodeRewriter extends Transform {
+    constructor(mimeType, rewriteAction) {
+        let options = {
+            readableObjectMode: true,
+            writableObjectMode: true
+        };
+        super(options);
+
+        this.mimeType = (mimeType || '').toString().toLowerCase().trim();
+        this.rewriteAction = rewriteAction;
+
+        this.decoder = false;
+        this.encoder = false;
+        this.continue = false;
+    }
+
+    _transform(data, encoding, callback) {
+        this.processIncoming(data, callback);
+    }
+
+    _flush(callback) {
+        if (this.decoder) {
+            this.decoder.end();
+        }
+        return callback();
+    }
+
+    processIncoming(data, callback) {
+        if (this.decoder && data.type === 'body') {
+            // data to parse
+            this.decoder.write(data.value);
+        } else if (this.decoder && data.type !== 'body') {
+            // stop decoding.
+            // we can not process the current data chunk as we need to wait until
+            // the parsed data is completely processed, so we store a reference to the
+            // continue callback
+            this.continue = () => {
+                this.continue = false;
+                this.decoder = false;
+                this.encoder = false;
+                this.processIncoming(data, callback);
+            };
+            return this.decoder.end();
+        } else if (data.type === 'node' && data.contentType === this.mimeType) {
+            // new HTML node, create new handler
+            this.createDecoder(data);
+            this.push(data);
+        } else {
+            // we don't care about this data, just pass it over to the joiner
+            this.push(data);
+        }
+        callback();
+    }
+
+    createDecoder(node) {
+        let chunks = [];
+        let chunklen = 0;
+
+        this.decoder = node.getDecoder();
+        this.encoder = node.getEncoder();
+
+        this.encoder.on('data', data => {
+            this.push(data);
+        });
+
+        this.encoder.on('end', () => {
+            if (this.continue) {
+                return this.continue();
+            }
+        });
+
+        this.decoder.on('data', chunk => {
+            chunks.push(chunk);
+            chunklen += chunk.length;
+        });
+
+        this.decoder.on('end', () => {
+            this.rewriteAction(Buffer.concat(chunks, chunklen), (err, data) => {
+                if (err) {
+                    return this.push(err);
+                }
+                this.encoder.end(data);
+            });
+        });
+    }
+}
 
 let splitter = new Splitter();
 let joiner = new Joiner();
 
-let chunks = false;
-let chunklen = 0;
-let htmlNode = false;
+// create a Rewriter for text/html
+let rewriter = new NodeRewriter('text/html', (html, callback) => {
+    // html is a Buffer
+    html = html.toString('binary');
 
-splitter.on('data', data => {
-    if (htmlNode && data.type !== 'body') {
-        // finish existing
-        let body = Buffer.concat(chunks, chunklen);
-        switch (htmlNode.encoding) {
-            case 'base64':
-                body = libbase64.decode(body.toString());
-                break;
-            case 'quoted-printable':
-                body = libqp.decode(body.toString());
-                break;
-        }
-        body = body.toString('binary');
+    // append ad link to the HTML code
+    let adLink = '<p><a href="http://example.com/">Visit my Awesome homepage!!!!</a></p>';
 
-        // append ad link to the HTML code
-        let adLink = '<p><a href="">Visit my Awesome homepage!!!!</a></p>';
-        if (/<\/body\b/i.test(body)) {
-            // add before <body> close
-            body.replace(/<\/body\b/i, match => '\r\n' + adLink + '\r\n' + match);
-        } else {
-            // append to the body
-            body += '\r\n' + adLink;
-        }
-
-        // restore encoded version
-        body = Buffer.from(body, 'binary');
-        switch (htmlNode.encoding) {
-            case 'base64':
-                body = Buffer.from(libbase64.wrap(libbase64.encode(body)));
-                break;
-            case 'quoted-printable':
-                body = Buffer.from(libqp.wrap(libqp.encode(body)));
-                break;
-        }
-
-        joiner.write({
-            type: 'body',
-            value: body
-        });
-
-        htmlNode = false;
-    }
-
-    if (data.type === 'node' && data.contentType === 'text/html') {
-        // new HTML node, reset handler
-
-        htmlNode = data;
-        chunks = [];
-        chunklen = 0;
-
-    } else if (htmlNode && data.type === 'body') {
-        // store data for decoding
-        chunks.push(data.value);
-        chunklen += data.value.length;
+    if (/<\/body\b/i.test(html)) {
+        // add before <body> close
+        html.replace(/<\/body\b/i, match => '\r\n' + adLink + '\r\n' + match);
     } else {
-        // we don't care about this data, just pass it over to the joiner
-        joiner.write(data);
+        // append to the body
+        html += '\r\n' + adLink;
     }
+    // return a Buffer
+    setImmediate(() => callback(null, Buffer.from(html, 'binary')));
 });
 
-splitter.on('end', () => {
-    joiner.end();
-});
-
-joiner.pipe(process.stdout);
-
-fs.createReadStream(__dirname + '/message.eml').pipe(splitter);
+// pipe all streams together
+fs.createReadStream(__dirname + '/message.eml').pipe(splitter).pipe(rewriter).pipe(joiner).pipe(process.stdout);
