@@ -287,7 +287,6 @@ module.exports['Split and join mimetorture message'] = test => {
     fs.createReadStream(__dirname + '/fixtures/mimetorture.eml').pipe(splitter).pipe(joiner);
 };
 
-
 module.exports['Fetch attachment from form-data'] = test => {
 
     let splitter = new MessageSplitter();
@@ -318,4 +317,113 @@ module.exports['Fetch attachment from form-data'] = test => {
     });
 
     fs.createReadStream(__dirname + '/fixtures/form-data.eml').pipe(splitter);
+};
+
+module.exports['Split multipart message with embedded message/rfc88'] = test => {
+
+    let splitter = new MessageSplitter();
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n');
+        },
+        data => {
+            test.equal(data.type, 'data');
+            test.equal(data.value.toString(), '--ABC\n');
+        },
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-Type: message/rfc822\r\n\r\n');
+        },
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\n\r\n');
+        },
+        data => {
+            test.equal(data.type, 'body');
+            test.equal(data.value.toString(), 'AAECAwQFBg==');
+        },
+        data => {
+            test.equal(data.type, 'data');
+            test.equal(data.value.toString(), '\r\n--ABC--');
+        }
+    ];
+    test.expect(18);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end(Buffer.from('Content-type: multipart/mixed; boundary=ABC\r\n' +
+        'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
+        'Subject: ABCDEF\r\n' +
+        '\r\n' +
+        '--ABC\n' +
+        'Content-Type: message/rfc822\r\n' +
+        '\r\n' +
+        'Content-Type: text/plain\r\n' +
+        'Content-Transfer-Encoding: base64\r\n' +
+        '\r\n' +
+        'AAECAwQFBg==\r\n' +
+        '--ABC--'));
+};
+
+
+module.exports['Split multipart message and ignore embedded message/rfc88'] = test => {
+
+    let splitter = new MessageSplitter({ignoreEmbedded: true});
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n');
+        },
+        data => {
+            test.equal(data.type, 'data');
+            test.equal(data.value.toString(), '--ABC\n');
+        },
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-Type: message/rfc822\r\n\r\n');
+        },
+        data => {
+            test.equal(data.type, 'body');
+            test.equal(data.value.toString(), 'Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\n\r\nAAECAwQFBg==');
+        },
+        data => {
+            test.equal(data.type, 'data');
+            test.equal(data.value.toString(), '\r\n--ABC--');
+        }
+    ];
+    test.expect(15);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end(Buffer.from('Content-type: multipart/mixed; boundary=ABC\r\n' +
+        'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
+        'Subject: ABCDEF\r\n' +
+        '\r\n' +
+        '--ABC\n' +
+        'Content-Type: message/rfc822\r\n' +
+        '\r\n' +
+        'Content-Type: text/plain\r\n' +
+        'Content-Transfer-Encoding: base64\r\n' +
+        '\r\n' +
+        'AAECAwQFBg==\r\n' +
+        '--ABC--'));
 };

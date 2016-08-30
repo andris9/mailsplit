@@ -10,16 +10,6 @@ In general this module is a primitive for building e-mail parsers/handlers. Alte
 
 See [rewrite-html.js](examples/rewrite-html.js) for an usage example where HTML content is modified on the fly (example script adds a link to every *text/html* node)
 
-## Data objects
-
-  * **type**
-    * `'node'` means that we reached the next mime node and the previous one is completely processed
-    * `'data'` provides us multipart body parts, including boundaries. This data is not directly related to any specific multipart node, basically it includes everything between the end of one normal node and the header of next node
-    * `'body'` provides us next chunk for the last seen `'node'` element
-  * **value** is a buffer value for `'body'` and `'data'` parts
-
-Element with type `'node'` has a bunch of header related methods and properties, see [below](#manipulating-headers).
-
 ## Usage
 
 ### Install
@@ -31,6 +21,34 @@ Install from [npm](https://www.npmjs.com/package/mailsplit)
 ### Split message stream
 
 `Splitter` is a transformable stream where input is a byte stream and output is an object stream.
+
+```javascript
+let Splitter = require('mailsplit').Splitter;
+let splitter = new Splitter(options);
+```
+
+Where
+
+  * **options** is an optional options object
+    * **options.ignoreEmbedded** (boolean, defaults to false) if true then treat message/rfc822 node as normal leaf node and do not try to parse it
+
+#### Events
+
+**'data'** event emits the next parsed object from the message stream.
+
+#### Data objects
+
+  * **type**
+    * `'node'` means that we reached the next mime node and the previous one is completely processed
+    * `'data'` provides us multipart body parts, including boundaries. This data is not directly related to any specific multipart node, basically it includes everything between the end of one normal node and the header of next node
+    * `'body'` provides us next chunk for the last seen `'node'` element
+  * **value** is a buffer value for `'body'` and `'data'` parts
+  * **getDecoder()** is a function that returns a stream object you can use to decode node contents. Write data from 'body' to decoder and read decoded Buffer value out from it
+  * **getEncoder()** is a function that returns a stream object you can use to encode node contents. Write buffer data to encoder and read encoded object value out that you can pass to a Joiner
+
+Element with type `'node'` has a bunch of header related methods and properties, see [below](#manipulating-headers).
+
+**Example**
 
 ```javascript
 let Splitter = require('mailsplit').Splitter;
@@ -97,6 +115,37 @@ let Splitter = require('mailsplit').Splitter;
 let Joiner = require('mailsplit').Joiner;
 let splitter = new Splitter();
 let joiner = new Joiner();
+// pipe a message source to splitter, then joiner and finally to stdout
+someMessagStream.pipe(splitter).pipe(joiner).pipe(process.stdout);
+```
+
+### Rewrite nodes with specific mime type
+
+`Rewriter` is a simple helper class to modify nodes with specific mime type, eg 'text/html'. You can pipe a Splitter stream directly into a Rewriter and pipe Rewriter output to a Joiner.
+
+Rewriter takes the following arguments:
+
+  * **mimeType** defines the mime type to look for (eg. 'text/html')
+  * **rewriteFunc** defines the rewriting function
+
+This class is probably not suitable for handling large data (eg. to resize images), in this case you should probably roll your own rewriter that processes the data as a stream instead of buffering.
+
+```javascript
+let Splitter = require('mailsplit').Splitter;
+let Joiner = require('mailsplit').Joiner;
+let Rewriter = require('mailsplit').Rewriter;
+let splitter = new Splitter();
+let joiner = new Joiner();
+let rewriter = new Rewriter('text/html', (node, html, callback)=>{
+    // manage headers with node.headers
+    node.headers.add('X-Processed-Time', new Date.toISOString());
+    // process html buffer (you probably would want to check node.charset before decoding buffer to a string though)
+    html = html.toString();
+    html += '<a href="http://example.com">Example</a>';
+    html = Buffer.from(html); // convert html back to a Buffer
+    // return the modified html value
+    callback(null, html);
+});
 // pipe a message source to splitter, then joiner and finally to stdout
 someMessagStream.pipe(splitter).pipe(joiner).pipe(process.stdout);
 ```
