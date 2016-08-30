@@ -146,8 +146,8 @@ let rewriter = new Rewriter('text/html', (node, html, callback)=>{
     // return the modified html value
     callback(null, html);
 });
-// pipe a message source to splitter, then joiner and finally to stdout
-someMessagStream.pipe(splitter).pipe(joiner).pipe(process.stdout);
+// pipe a message source to splitter, then rewriter, then joiner and finally to stdout
+someMessagStream.pipe(splitter).pipe(rewriter).pipe(joiner).pipe(process.stdout);
 ```
 
 ### Benchmark
