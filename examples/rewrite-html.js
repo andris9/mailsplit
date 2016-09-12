@@ -13,7 +13,7 @@ let splitter = new Splitter();
 let joiner = new Joiner();
 
 // create a Rewriter for text/html
-let rewriter = new Rewriter('text/html', (node, html, callback) => {
+let rewriter = new Rewriter(['text/html', 'text/plain'], (node, html, callback) => {
 
     // add a header to the current mime node
     node.headers.add('X-Split', 'yes');

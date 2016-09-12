@@ -13,10 +13,12 @@ Content-Type: multipart/alternative;
  boundary="----sinikael-?=_2-14068025046600.5643155472353101"
 
 ------sinikael-?=_2-14068025046600.5643155472353101
-Content-Type: text/plain
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
 Content-Transfer-Encoding: 7bit
 
-Hello to myself!
+Hello to myself! First line 
+continued 
+and so on
 ------sinikael-?=_2-14068025046600.5643155472353101
 Content-Type: multipart/related; type="text/html";
  boundary="----sinikael-?=_4-14068025046600.5643155472353101"
