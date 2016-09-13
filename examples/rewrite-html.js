@@ -13,7 +13,7 @@ let splitter = new Splitter();
 let joiner = new Joiner();
 
 // create a Rewriter for text/html
-let rewriter = new Rewriter(['text/html', 'text/plain'], (node, html, callback) => {
+let rewriter = new Rewriter(node => ['text/html', 'text/plain'].includes(node.contentType) && node.disposition !== 'attachment', (node, html, callback) => {
 
     // add a header to the current mime node
     node.headers.add('X-Split', 'yes');
@@ -28,17 +28,23 @@ let rewriter = new Rewriter(['text/html', 'text/plain'], (node, html, callback) 
     // enforce utf-8
     node.setCharset('utf-8');
 
-    // append ad link to the HTML code
-    let adLink = '<p><a href="http://example.com/">Visit my Awesome homepage!!!!</a>🐭</p>';
+    if (node.contentType === 'text/html') {
+        // append ad link to the HTML code
+        let adLink = '<p><a href="http://example.com/">Visit my Awesome homepage!!!!</a>🐭</p>';
 
-    if (/<\/body\b/i.test(html)) {
-        // add before <body> close
-        html.replace(/<\/body\b/i, match => '\r\n' + adLink + '\r\n' + match);
+        if (/<\/body\b/i.test(html)) {
+            // add before <body> close
+            html.replace(/<\/body\b/i, match => '\r\n' + adLink + '\r\n' + match);
+        } else {
+            // append to the body
+            html += '\r\n' + adLink;
+        }
     } else {
+        // append ad link to the HTML code
+        let adLink = 'Visit my Awesome homepage!!!! <http://example.com/> 🐭';
         // append to the body
         html += '\r\n' + adLink;
     }
-
     // return a Buffer
     setImmediate(() => callback(null, Buffer.from(html)));
 });

@@ -125,7 +125,7 @@ someMessagStream.pipe(splitter).pipe(joiner).pipe(process.stdout);
 
 Rewriter takes the following arguments:
 
-  * **mimeType** defines the mime type to look for (eg. 'text/html')
+  * **filterFunc** gets the current node as argument and starts processing it if `filterFunc` returns true
   * **rewriteFunc** defines the rewriting function
 
 This class is probably not suitable for handling large data (eg. to resize images), in this case you should probably roll your own rewriter that processes the data as a stream instead of buffering.
@@ -136,7 +136,7 @@ let Joiner = require('mailsplit').Joiner;
 let Rewriter = require('mailsplit').Rewriter;
 let splitter = new Splitter();
 let joiner = new Joiner();
-let rewriter = new Rewriter('text/html', (node, html, callback)=>{
+let rewriter = new Rewriter(node=>node.contentType === 'text/html', (node, html, callback)=>{
     // manage headers with node.headers
     node.headers.add('X-Processed-Time', new Date.toISOString());
     // process html buffer (you probably would want to check node.charset before decoding buffer to a string though)
