@@ -123,12 +123,16 @@ someMessagStream.pipe(splitter).pipe(joiner).pipe(process.stdout);
 
 `Rewriter` is a simple helper class to modify nodes with specific mime type, eg 'text/html'. You can pipe a Splitter stream directly into a Rewriter and pipe Rewriter output to a Joiner.
 
-Rewriter takes the following arguments:
+Rewriter takes the following argument:
 
   * **filterFunc** gets the current node as argument and starts processing it if `filterFunc` returns true
-  * **rewriteFunc** defines the rewriting function
 
-This class is probably not suitable for handling large data (eg. to resize images), in this case you should probably roll your own rewriter that processes the data as a stream instead of buffering.
+Once Rewriter finds a matchin node, it emits the following event:
+
+  * *'node'* with an object argument `data`
+    * `data.node` includes the current node with headers
+    * `data.decoder` is the decoder stream that you can read data from
+    * `data.encoder` is the encoder stream that you can write data to. Whatever you write into that stream will be encoded properly and inserted as the content of the current node
 
 ```javascript
 let Splitter = require('mailsplit').Splitter;
@@ -136,15 +140,12 @@ let Joiner = require('mailsplit').Joiner;
 let Rewriter = require('mailsplit').Rewriter;
 let splitter = new Splitter();
 let joiner = new Joiner();
-let rewriter = new Rewriter(node=>node.contentType === 'text/html', (node, html, callback)=>{
+let rewriter = new Rewriter(node=>node.contentType === 'text/html');
+rewriter.on('node', data => {
     // manage headers with node.headers
     node.headers.add('X-Processed-Time', new Date.toISOString());
-    // process html buffer (you probably would want to check node.charset before decoding buffer to a string though)
-    html = html.toString();
-    html += '<a href="http://example.com">Example</a>';
-    html = Buffer.from(html); // convert html back to a Buffer
-    // return the modified html value
-    callback(null, html);
+    // do nothing, just reencode existing data
+    data.decoder.pipe(data.encoder);
 });
 // pipe a message source to splitter, then rewriter, then joiner and finally to stdout
 someMessagStream.pipe(splitter).pipe(rewriter).pipe(joiner).pipe(process.stdout);
