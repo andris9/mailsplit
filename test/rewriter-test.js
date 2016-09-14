@@ -13,7 +13,7 @@ module.exports['Recreate message and extract image'] = test => {
     let imgHash = crypto.createHash('md5');
 
     // create a Rewriter for text/html
-    let rewriter = new Rewriter(node => node.contentType === 'image/gif');
+    let rewriter = new Rewriter(node => node.contentType === 'image/jpeg');
     rewriter.on('node', data => {
         data.decoder.on('data', chunk => {
             imgHash.update(chunk);
@@ -22,15 +22,16 @@ module.exports['Recreate message and extract image'] = test => {
         data.decoder.pipe(data.encoder);
     });
 
-    let output = fs.createReadStream(__dirname + '/fixtures/message.eml').pipe(splitter).pipe(rewriter).pipe(joiner);
+
+    let output = fs.createReadStream(__dirname + '/fixtures/large_image.eml').pipe(splitter).pipe(rewriter).pipe(joiner);
     output.on('data', chunk => {
         // use \n newlines
-        chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');
+        //chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');
         msgHash.update(chunk);
     });
     output.on('end', () => {
-        test.equal(msgHash.digest('hex'), 'db6223cc3a59b840558b6f1817c9953d');
-        test.equal(imgHash.digest('hex'), '2822cbcf68de083b96ac3921d0e308a2');
+        test.equal(msgHash.digest('hex'), '3a5fa4280a54ebfc3ee956fb202a04ea');
+        test.equal(imgHash.digest('hex'), '393b91601d78359c99b5b667c2d5dda8');
 
         test.done();
     });
@@ -56,7 +57,6 @@ module.exports['Recreate message with updated format=flow text node'] = test => 
         });
     });
 
-    let fss = fs.createWriteStream('/Users/andris/Desktop/out2.eml');
     let output = fs.createReadStream(__dirname + '/fixtures/message.eml').pipe(splitter).pipe(rewriter).pipe(joiner);
     output.on('data', chunk => {
         // normalize to use \n newlines
@@ -70,7 +70,6 @@ module.exports['Recreate message with updated format=flow text node'] = test => 
 
         test.done();
     });
-    output.pipe(fss);
 
     test.expect(1);
 };
