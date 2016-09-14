@@ -1,6 +1,6 @@
 {
   "name": "mailsplit",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Split email messages into an object stream",
   "main": "index.js",
   "directories": {
@@ -22,5 +22,9 @@
     "libbase64": "^0.1.0",
     "libqp": "^1.1.0",
     "random-message": "^1.1.0"
-  }
+  },
+  "files": [
+    "lib",
+    "index.js"
+  ]
 }
