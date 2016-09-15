@@ -378,7 +378,9 @@ module.exports['Split multipart message with embedded message/rfc88'] = test => 
 
 module.exports['Split multipart message and ignore embedded message/rfc88'] = test => {
 
-    let splitter = new MessageSplitter({ignoreEmbedded: true});
+    let splitter = new MessageSplitter({
+        ignoreEmbedded: true
+    });
 
     let tests = [
         data => {
@@ -426,4 +428,34 @@ module.exports['Split multipart message and ignore embedded message/rfc88'] = te
         '\r\n' +
         'AAECAwQFBg==\r\n' +
         '--ABC--'));
+};
+
+module.exports['Stange split'] = test => {
+    let data = [
+        'Content-Type: multipart/mixed;\r\n boundary="----sinikael-?=_1-14739302159560.25004998018597235"\r\nX-Laziness-Level: 1000\r\nFrom: Sender Name <test@zone.ee>\r\nTo: Andris Reinman <andris@127.0.0.1>\r\nSubject: Nodemailer is unicode friendly =?UTF-8?Q?=E2=9C=94?=\r\n (1473930215952)\r\nMessage-ID: <def930ed-3708-1dc3-d6b0-f993d9f11941@zone.ee>\r\nX-Mailer: nodemailer (2.6.0; +http://nodemailer.com/;\r\n SMTP/2.7.2[client:2.12.0])\r\nDate: Thu, 15 Sep 2016 09:03:35 +0000\r\nMIME-Version: 1.0',
+        '\r\n\r\n------sinikael-?=_1-14739302159560.25004998018597235\r\nContent-Type: multipart/alternative;\r\n boundary="----sinikael-?=_2-14739302159560.25004998018597235"\r\n\r\n------sinikael-?=_2-14739302159560.25004998018597235\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHello to myself!\r\n------sinikael-?=_2-14739302159560.25004998018597235\r\nContent-Type: text/watch-html\r\nContent-Transfer-Encoding: 7bit\r\n\r\n<b>Hello</b> to myself\r\n------sinikael-?=_2-14739302159560.25004998018597235\r\nContent-Type: multipart/related; type="text/html";\r\n boundary="----sinikael-?=_5-14739302159560.25004998018597235"'
+    ];
+
+    let splitter = new MessageSplitter({
+        ignoreEmbedded: true
+    });
+
+    splitter.on('data', ( /*data */ ) => {
+        //console.log('DATA', JSON.stringify(data.type==='node' ? data.headers.lines : data.value && data.value.toString()));
+    });
+
+    splitter.on('end', () => {
+        test.ok(1);
+        test.done();
+    });
+
+    setTimeout(() => {
+        splitter.write(data[0]);
+        setTimeout(() => {
+            splitter.write(data[1]);
+            setTimeout(() => {
+                splitter.end();
+            }, 1000);
+        }, 1000);
+    }, 1000);
 };
