@@ -120,15 +120,15 @@ let joiner = new Joiner();
 someMessagStream.pipe(splitter).pipe(joiner).pipe(process.stdout);
 ```
 
-### Rewrite nodes with specific mime type
+### Rewrite specific nodes
 
-`Rewriter` is a simple helper class to modify nodes with specific mime type, eg 'text/html'. You can pipe a Splitter stream directly into a Rewriter and pipe Rewriter output to a Joiner.
+`Rewriter` is a simple helper class to modify nodes that match a filter function. You can pipe a Splitter stream directly into a Rewriter and pipe Rewriter output to a Joiner.
 
 Rewriter takes the following argument:
 
   * **filterFunc** gets the current node as argument and starts processing it if `filterFunc` returns true
 
-Once Rewriter finds a matchin node, it emits the following event:
+Once Rewriter finds a matching node, it emits the following event:
 
   * *'node'* with an object argument `data`
     * `data.node` includes the current node with headers
@@ -150,6 +150,38 @@ rewriter.on('node', data => {
 });
 // pipe a message source to splitter, then rewriter, then joiner and finally to stdout
 someMessagStream.pipe(splitter).pipe(rewriter).pipe(joiner).pipe(process.stdout);
+```
+
+### Stream specific nodes
+
+`Streamer` is a simple helper class to stream nodes that match a filter function. You can pipe a Splitter stream directly into a Streamer and pipe Streamer output to a Joiner.
+
+Streamer takes the following argument:
+
+  * **filterFunc** gets the current node as argument and starts processing it if `filterFunc` returns true
+
+Once Streamer finds a matching node, it emits the following event:
+
+  * *'node'* with an object argument `data`
+    * `data.node` includes the current node with headers (informational only, you can't modify it)
+    * `data.decoder` is the decoder stream that you can read data from
+    * `data.done` is a function you must call once you have processed the stream
+
+```javascript
+let Splitter = require('mailsplit').Splitter;
+let Joiner = require('mailsplit').Joiner;
+let Streamer = require('mailsplit').Streamer;
+let fs = require('fs');
+let splitter = new Splitter();
+let joiner = new Joiner();
+let streamer = new Streamer(node=>node.contentType === 'image/jpeg');
+streamer.on('node', data => {
+    // write to file
+    data.decoder.pipe(fs.createWriteStream(data.node.filename || 'image.jpg'));
+    data.done();
+});
+// pipe a message source to splitter, then streamer, then joiner and finally to stdout
+someMessagStream.pipe(splitter).pipe(streamer).pipe(joiner).pipe(process.stdout);
 ```
 
 ### Benchmark
