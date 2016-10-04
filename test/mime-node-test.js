@@ -5,10 +5,10 @@ let MimeNode = require('../lib/mime-node');
 module.exports['Add and parse headers'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(Buffer.from('Subject: test\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from(' jne\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from('X-Mailer: 12345\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from('\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('Subject: test\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from(' jne\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('X-Mailer: 12345\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('\r\n'));
 
     mimeNode.parseHeaders();
 
@@ -20,12 +20,12 @@ module.exports['Add and parse headers'] = test => {
 module.exports['Update Content-Type'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(Buffer.from('Subject: test\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from(' jne\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from('Content-Type: text/plain;\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from(' boundary="abc"\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from('X-Mailer: 12345\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from('\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('Subject: test\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from(' jne\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('Content-Type: text/plain;\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from(' boundary="abc"\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('X-Mailer: 12345\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('\r\n'));
 
     mimeNode.parseHeaders();
 
@@ -39,7 +39,7 @@ module.exports['Update Content-Type'] = test => {
 module.exports['Get filename from Content-Type'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(
+    mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Type: application/octet-stream; name="=?UTF-8?Q?=C3=95=C3=84=C3=96=C3=9C?="\r\n' +
             'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'));
@@ -53,7 +53,7 @@ module.exports['Get filename from Content-Type'] = test => {
 module.exports['Get split filename from Content-Type'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(
+    mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Type: application/octet-stream;\r\n' +
             '    name*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
@@ -68,7 +68,7 @@ module.exports['Get split filename from Content-Type'] = test => {
 module.exports['Get filename from Content-Disposition'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(
+    mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition: inline; filename="=?UTF-8?Q?=C3=95=C3=84=C3=96=C3=9C?="\r\n' +
             'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'));
@@ -82,7 +82,7 @@ module.exports['Get filename from Content-Disposition'] = test => {
 module.exports['Get split filename from Content-Disposition'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(
+    mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
             '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
@@ -98,7 +98,7 @@ module.exports['Get split filename from Content-Disposition'] = test => {
 module.exports['Set filename'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(
+    mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
             '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
@@ -117,7 +117,7 @@ module.exports['Set filename'] = test => {
 module.exports['Delete filename'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(
+    mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
             '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
@@ -134,12 +134,12 @@ module.exports['Delete filename'] = test => {
 module.exports['Update existing filename'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(Buffer.from('Subject: test\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from(' jne\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from('Content-Type: text/plain;\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from(' boundary="abc"\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from('X-Mailer: 12345\r\n'));
-    mimeNode._addHeaderChunk(Buffer.from('\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('Subject: test\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from(' jne\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('Content-Type: text/plain;\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from(' boundary="abc"\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('X-Mailer: 12345\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('\r\n'));
 
     mimeNode.parseHeaders();
 
@@ -151,7 +151,7 @@ module.exports['Update existing filename'] = test => {
 module.exports['Set character set'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(Buffer.from('Subject: test\r\n\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('Subject: test\r\n\r\n'));
 
     mimeNode.parseHeaders();
 
@@ -163,7 +163,7 @@ module.exports['Set character set'] = test => {
 module.exports['Update character set'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(Buffer.from('Content-Type: text/plain; charset=utf-8\r\nSubject: test\r\n\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('Content-Type: text/plain; charset=utf-8\r\nSubject: test\r\n\r\n'));
 
     mimeNode.parseHeaders();
 
@@ -175,7 +175,7 @@ module.exports['Update character set'] = test => {
 module.exports['Remove character set'] = test => {
     let mimeNode = new MimeNode();
 
-    mimeNode._addHeaderChunk(Buffer.from('Content-Type: text/plain; charset=utf-8\r\nSubject: test\r\n\r\n'));
+    mimeNode.addHeaderChunk(Buffer.from('Content-Type: text/plain; charset=utf-8\r\nSubject: test\r\n\r\n'));
 
     mimeNode.parseHeaders();
 

@@ -31,6 +31,7 @@ Where
 
   * **options** is an optional options object
     * **options.ignoreEmbedded** (boolean, defaults to false) if true then treat message/rfc822 node as normal leaf node and do not try to parse it
+    * **options.maxHeadSize** (number, defaults to Infinity) limits message header size in bytes
 
 #### Events
 

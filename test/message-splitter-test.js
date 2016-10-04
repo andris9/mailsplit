@@ -430,7 +430,7 @@ module.exports['Split multipart message and ignore embedded message/rfc88'] = te
         '--ABC--'));
 };
 
-module.exports['Stange split'] = test => {
+module.exports['Strange split'] = test => {
     let data = [
         'Content-Type: multipart/mixed;\r\n boundary="----sinikael-?=_1-14739302159560.25004998018597235"\r\nX-Laziness-Level: 1000\r\nFrom: Sender Name <test@zone.ee>\r\nTo: Andris Reinman <andris@127.0.0.1>\r\nSubject: Nodemailer is unicode friendly =?UTF-8?Q?=E2=9C=94?=\r\n (1473930215952)\r\nMessage-ID: <def930ed-3708-1dc3-d6b0-f993d9f11941@zone.ee>\r\nX-Mailer: nodemailer (2.6.0; +http://nodemailer.com/;\r\n SMTP/2.7.2[client:2.12.0])\r\nDate: Thu, 15 Sep 2016 09:03:35 +0000\r\nMIME-Version: 1.0',
         '\r\n\r\n------sinikael-?=_1-14739302159560.25004998018597235\r\nContent-Type: multipart/alternative;\r\n boundary="----sinikael-?=_2-14739302159560.25004998018597235"\r\n\r\n------sinikael-?=_2-14739302159560.25004998018597235\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: 7bit\r\n\r\nHello to myself!\r\n------sinikael-?=_2-14739302159560.25004998018597235\r\nContent-Type: text/watch-html\r\nContent-Transfer-Encoding: 7bit\r\n\r\n<b>Hello</b> to myself\r\n------sinikael-?=_2-14739302159560.25004998018597235\r\nContent-Type: multipart/related; type="text/html";\r\n boundary="----sinikael-?=_5-14739302159560.25004998018597235"'
@@ -458,4 +458,29 @@ module.exports['Stange split'] = test => {
             }, 1000);
         }, 1000);
     }, 1000);
+};
+
+module.exports['Fail on large header'] = test => {
+
+    let splitter = new MessageSplitter({
+        maxHeadSize: 5
+    });
+
+    test.expect(1);
+
+    splitter.on('data', () => {
+        test.ok(false);
+    });
+
+    splitter.once('error', err => {
+        test.ok(err);
+        test.done();
+    });
+
+    splitter.on('end', () => {
+        test.ok(false);
+    });
+
+    splitter.end('Subject: test\nMime-Version: 1.0\n\nHello world!');
+
 };
