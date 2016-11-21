@@ -12,7 +12,7 @@
   "author": "Andris Reinman",
   "license": "MIT",
   "dependencies": {
-    "libmime": "^2.1.0"
+    "libmime": "^2.1.2"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
