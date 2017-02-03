@@ -6,9 +6,11 @@ This is useful if you want to modify some specific parts of an email, for exampl
 
 Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (or mixed) line endings. Embedded rfc822 messages are also parsed, in this case you would get two sequential 'node' objects with no 'data' or 'body' in  between (first 'node' is for the container node and second for the root node of the embedded message).
 
-In general this module is a primitive for building e-mail parsers/handlers. Alternatively you could use it to parse other MIME-like structures, for example *mbox* files or multipart/form-data uploads.
+In general this module is a primitive for building e-mail parsers/handlers like [mailparser](https://www.npmjs.com/package/mailparser). Alternatively you could use it to parse other MIME-like structures, for example *mbox* files or multipart/form-data uploads.
 
 See [rewrite-html.js](examples/rewrite-html.js) for an usage example where HTML content is modified on the fly (example script adds a link to every *text/html* node)
+
+> Starting from v4.0.0 *mailsplit* is licensed under the [European Union Public License 1.1](http://ec.europa.eu/idabc/eupl.html). In general, EUPLv1.1 is a _copyleft_ license compatible with GPLv2, so if you're OK using GPL then you should be OK using MailParser. Previous versions of *mailsplit* are licensed under the MIT license.
 
 ## Usage
 
@@ -197,4 +199,4 @@ Done. 20000 messages [1244 MB] processed in 55.882 s. with average of 358 messag
 
 ## License
 
-**MIT**
+**EUPLv1.1**
