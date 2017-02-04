@@ -10,7 +10,7 @@ In general this module is a primitive for building e-mail parsers/handlers like 
 
 See [rewrite-html.js](examples/rewrite-html.js) for an usage example where HTML content is modified on the fly (example script adds a link to every *text/html* node)
 
-> Starting from v4.0.0 *mailsplit* is licensed under the [European Union Public License 1.1](http://ec.europa.eu/idabc/eupl.html). In general, EUPLv1.1 is a _copyleft_ license compatible with GPLv2, so if you're OK using GPL then you should be OK using MailParser. Previous versions of *mailsplit* are licensed under the MIT license.
+> This module is part of the [Nodemailer bundle](https://nodemailer.com/about/pricing/). Starting from v4.0.0 *mailsplit* is licensed under the [European Union Public License 1.1](http://ec.europa.eu/idabc/eupl.html). In general, EUPLv1.1 is a _copyleft_ license compatible with GPLv2, so if you're OK using GPL then you should be OK using *mailsplit*. Previous versions of *mailsplit* are licensed under the MIT license.
 
 ## Usage
 
