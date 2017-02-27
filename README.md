@@ -18,7 +18,7 @@ See [rewrite-html.js](examples/rewrite-html.js) for an usage example where HTML 
 
 Install from [npm](https://www.npmjs.com/package/mailsplit)
 
-    npm install mailsplit
+    npm install mailsplit --save
 
 ### Split message stream
 
