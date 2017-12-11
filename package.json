@@ -13,7 +13,7 @@
   "license": "EUPL-1.1",
   "dependencies": {
     "libmime": "3.1.0",
-    "libbase64": "0.1.0",
+    "libbase64": "1.0.1",
     "libqp": "1.1.0"
   },
   "devDependencies": {
