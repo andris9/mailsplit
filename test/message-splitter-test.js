@@ -496,5 +496,38 @@ module.exports['Fail on large header'] = test => {
         test.done();
     });
 
+    splitter.once('end', () => {
+        test.ok(1);
+    });
+
     splitter.end('Subject: test\nMime-Version: 1.0\n\nHello world!');
+};
+
+module.exports['Handle really large header'] = test => {
+    let splitter = new MessageSplitter();
+
+    splitter.on('data', () => {
+        test.ok(true);
+    });
+
+    splitter.once('error', err => {
+        test.ok(!err);
+    });
+
+    splitter.once('end', () => {
+        test.ok(true);
+        test.done();
+    });
+
+    let chunks = [];
+    for (let i = 0; i < 100000; i++) {
+        chunks.push(Buffer.from('X-Header-' + i + ': some-random-value-' + i + '\r\n'));
+    }
+    chunks.push(Buffer.from('From: sender@example.com\r\n'));
+    chunks.push(Buffer.from('To: receiver@example.com\r\n'));
+    chunks.push(Buffer.from('Subject: message with large header\r\n'));
+    chunks.push(Buffer.from('\r\n'));
+    chunks.push(Buffer.from('Hello world!\r\n'));
+
+    splitter.end(Buffer.concat(chunks));
 };

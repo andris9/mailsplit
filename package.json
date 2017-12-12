@@ -1,31 +1,28 @@
 {
-  "name": "mailsplit",
-  "version": "4.1.0",
-  "description": "Split email messages into an object stream",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "grunt"
-  },
-  "author": "Andris Reinman",
-  "license": "EUPL-1.1",
-  "dependencies": {
-    "libmime": "3.1.0",
-    "libbase64": "1.0.1",
-    "libqp": "1.1.0"
-  },
-  "devDependencies": {
-    "eslint-config-nodemailer": "^1.2.0",
-    "grunt": "^1.0.1",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-nodeunit": "^1.0.0",
-    "grunt-eslint": "^20.1.0",
-    "random-message": "^1.1.0"
-  },
-  "files": [
-    "lib",
-    "index.js"
-  ]
+    "name": "mailsplit",
+    "version": "4.1.1",
+    "description": "Split email messages into an object stream",
+    "main": "index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "grunt"
+    },
+    "author": "Andris Reinman",
+    "license": "EUPL-1.1",
+    "dependencies": {
+        "libmime": "3.1.0",
+        "libbase64": "1.0.1",
+        "libqp": "1.1.0"
+    },
+    "devDependencies": {
+        "eslint-config-nodemailer": "^1.2.0",
+        "grunt": "^1.0.1",
+        "grunt-cli": "^1.2.0",
+        "grunt-contrib-nodeunit": "^1.0.0",
+        "grunt-eslint": "^20.1.0",
+        "random-message": "^1.1.0"
+    },
+    "files": ["lib", "index.js"]
 }
