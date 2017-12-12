@@ -16,7 +16,6 @@ let joiner = new Joiner();
 let rewriter = new Rewriter(node => ['text/html', 'text/plain', 'image/gif'].includes(node.contentType));
 
 rewriter.on('node', data => {
-
     // add a header to the current mime node
     data.node.headers.add('X-Split', 'yes');
 
@@ -69,4 +68,9 @@ rewriter.on('node', data => {
 });
 
 // pipe all streams together
-fs.createReadStream(__dirname + '/message.eml').pipe(splitter).pipe(rewriter).pipe(joiner).pipe(process.stdout);
+fs
+    .createReadStream(__dirname + '/message.eml')
+    .pipe(splitter)
+    .pipe(rewriter)
+    .pipe(joiner)
+    .pipe(process.stdout);

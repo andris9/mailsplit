@@ -4,11 +4,11 @@ Split an email message stream into structured parts and join these parts back in
 
 This is useful if you want to modify some specific parts of an email, for example to add tracking images or unsubscribe links to the HTML part of the message without changing any other parts of the email.
 
-Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (or mixed) line endings. Embedded rfc822 messages are also parsed, in this case you would get two sequential 'node' objects with no 'data' or 'body' in  between (first 'node' is for the container node and second for the root node of the embedded message).
+Supports both &lt;CR&gt;&lt;LF&gt; and &lt;LF&gt; (or mixed) line endings. Embedded rfc822 messages are also parsed, in this case you would get two sequential 'node' objects with no 'data' or 'body' in between (first 'node' is for the container node and second for the root node of the embedded message).
 
-In general this module is a primitive for building e-mail parsers/handlers like [mailparser](https://www.npmjs.com/package/mailparser). Alternatively you could use it to parse other MIME-like structures, for example *mbox* files or multipart/form-data uploads.
+In general this module is a primitive for building e-mail parsers/handlers like [mailparser](https://www.npmjs.com/package/mailparser). Alternatively you could use it to parse other MIME-like structures, for example _mbox_ files or multipart/form-data uploads.
 
-See [rewrite-html.js](examples/rewrite-html.js) for an usage example where HTML content is modified on the fly (example script adds a link to every *text/html* node)
+See [rewrite-html.js](examples/rewrite-html.js) for an usage example where HTML content is modified on the fly (example script adds a link to every _text/html_ node)
 
 ## Usage
 
@@ -29,9 +29,9 @@ let splitter = new Splitter(options);
 
 Where
 
-  * **options** is an optional options object
-    * **options.ignoreEmbedded** (boolean, defaults to false) if true then treat message/rfc822 node as normal leaf node and do not try to parse it
-    * **options.maxHeadSize** (number, defaults to Infinity) limits message header size in bytes
+* **options** is an optional options object
+  * **options.ignoreEmbedded** (boolean, defaults to false) if true then treat message/rfc822 node as normal leaf node and do not try to parse it
+  * **options.maxHeadSize** (number, defaults to Infinity) limits message header size in bytes
 
 #### Events
 
@@ -39,13 +39,13 @@ Where
 
 #### Data objects
 
-  * **type**
-    * `'node'` means that we reached the next mime node and the previous one is completely processed
-    * `'data'` provides us multipart body parts, including boundaries. This data is not directly related to any specific multipart node, basically it includes everything between the end of one normal node and the header of next node
-    * `'body'` provides us next chunk for the last seen `'node'` element
-  * **value** is a buffer value for `'body'` and `'data'` parts
-  * **getDecoder()** is a function that returns a stream object you can use to decode node contents. Write data from 'body' to decoder and read decoded Buffer value out from it
-  * **getEncoder()** is a function that returns a stream object you can use to encode node contents. Write buffer data to encoder and read encoded object value out that you can pass to a Joiner
+* **type**
+  * `'node'` means that we reached the next mime node and the previous one is completely processed
+  * `'data'` provides us multipart body parts, including boundaries. This data is not directly related to any specific multipart node, basically it includes everything between the end of one normal node and the header of next node
+  * `'body'` provides us next chunk for the last seen `'node'` element
+* **value** is a buffer value for `'body'` and `'data'` parts
+* **getDecoder()** is a function that returns a stream object you can use to decode node contents. Write data from 'body' to decoder and read decoded Buffer value out from it
+* **getEncoder()** is a function that returns a stream object you can use to encode node contents. Write buffer data to encoder and read encoded object value out that you can pass to a Joiner
 
 Element with type `'node'` has a bunch of header related methods and properties, see [below](#manipulating-headers).
 
@@ -55,8 +55,8 @@ Element with type `'node'` has a bunch of header related methods and properties,
 let Splitter = require('mailsplit').Splitter;
 let splitter = new Splitter();
 // handle parsed data
-splitter.on('data', (data)=>{
-    switch(data.type){
+splitter.on('data', data => {
+    switch (data.type) {
         case 'node':
             // node header block
             process.stdout.write(data.getHeaders());
@@ -65,12 +65,12 @@ splitter.on('data', (data)=>{
             // multipart message structure
             // this is not related to any specific 'node' block as it includes
             // everything between the end of some node body and between the next header
-            process.stdout.write(data.value)
+            process.stdout.write(data.value);
             break;
         case 'body':
             // Leaf element body. Includes the body for the last 'node' block. You might
             // have several 'body' calls for a single 'node' block
-            process.stdout.write(data.value)
+            process.stdout.write(data.value);
             break;
     }
 });
@@ -82,30 +82,30 @@ someMessagStream.pipe(splitter);
 
 If the data object has `type='node'` then you can modify headers for that node (headers can be modified until the data object is passed over to a `Joiner`)
 
-  * **node.getHeaders()** returns a Buffer value with generated headers. If you have not modified the headers object in any way then you should get the exact copy of the original. In case you have done something (for example removed a key, or added a new header key), then all linebreaks are forced to &lt;CR&gt;&lt;LF&gt; even if the original headers used just &lt;LF&gt;
-  * **node.setContentType(contentType)** sets or updates mime type for the node
-  * **node.setCharset(charset)** sets or updates character set in the Content-Type header
-  * **node.setFilename(filename)** sets or updates filename in the Content-Disposition header (unicode allowed)
+* **node.getHeaders()** returns a Buffer value with generated headers. If you have not modified the headers object in any way then you should get the exact copy of the original. In case you have done something (for example removed a key, or added a new header key), then all linebreaks are forced to &lt;CR&gt;&lt;LF&gt; even if the original headers used just &lt;LF&gt;
+* **node.setContentType(contentType)** sets or updates mime type for the node
+* **node.setCharset(charset)** sets or updates character set in the Content-Type header
+* **node.setFilename(filename)** sets or updates filename in the Content-Disposition header (unicode allowed)
 
 You can manipulate specific header keys as well using the `headers` object
 
-  * **node.headers.get(key)** returns an array of strings with all header rows for the selected key (these are full header lines, so key name is part of the row string, eg `["Subject: This is subject line"]`)
-  * **node.headers.getFirst(key)** returns string value of the specified header key (eg `"This is subject line"`)
-  * **node.headers.add(key, value [,index])** adds a new header value to the specified index or to the top of the header block if index is not specified
-  * **node.headers.update(key, value)** replaces a header value for the specified key
-  * **node.headers.delete(key)** remove header value
-  * **node.headers.mbox** If this is a MBOX formatted message then this value holds the prefix line (eg. "From MAILER-DAEMON Fri Jul  8 12:08:34 2011")
-  * **node.headers.mbox** If this is a POST form-data then this value holds the HTTP prefix line (eg. "POST /upload.php HTTP/1.1")
+* **node.headers.get(key)** returns an array of strings with all header rows for the selected key (these are full header lines, so key name is part of the row string, eg `["Subject: This is subject line"]`)
+* **node.headers.getFirst(key)** returns string value of the specified header key (eg `"This is subject line"`)
+* **node.headers.add(key, value [,index])** adds a new header value to the specified index or to the top of the header block if index is not specified
+* **node.headers.update(key, value)** replaces a header value for the specified key
+* **node.headers.delete(key)** remove header value
+* **node.headers.mbox** If this is a MBOX formatted message then this value holds the prefix line (eg. "From MAILER-DAEMON Fri Jul 8 12:08:34 2011")
+* **node.headers.mbox** If this is a POST form-data then this value holds the HTTP prefix line (eg. "POST /upload.php HTTP/1.1")
 
 Additionally you can check the details of the node with the following properties automatically parsed from the headers:
 
-  * **node.root** if true then it means this is the message root, so this node should contain Subject, From, To etc. headers
-  * **node.contentType** returns the mime type of the node (eg. 'text/html')
-  * **node.disposition** either `'attachment'`, `'inline'` or `false` if not set
-  * **node.charset** returns the charset of the node as defined in 'Content-Type' header (eg. 'UTF-8') or false if not defined
-  * **node.encoding** returns the Transfer-Encoding value (eg. 'base64' or 'quoted-printable') or false if not defined
-  * **node.multipart** if has value, then this is a multipart node (does not have 'body' parts)
-  * **node.filename** is set if the headers contain a filename value. This is decoded to unicode, so it is a normal string or false if not found
+* **node.root** if true then it means this is the message root, so this node should contain Subject, From, To etc. headers
+* **node.contentType** returns the mime type of the node (eg. 'text/html')
+* **node.disposition** either `'attachment'`, `'inline'` or `false` if not set
+* **node.charset** returns the charset of the node as defined in 'Content-Type' header (eg. 'UTF-8') or false if not defined
+* **node.encoding** returns the Transfer-Encoding value (eg. 'base64' or 'quoted-printable') or false if not defined
+* **node.multipart** if has value, then this is a multipart node (does not have 'body' parts)
+* **node.filename** is set if the headers contain a filename value. This is decoded to unicode, so it is a normal string or false if not found
 
 ### Join parsed message stream
 
@@ -117,7 +117,10 @@ let Joiner = require('mailsplit').Joiner;
 let splitter = new Splitter();
 let joiner = new Joiner();
 // pipe a message source to splitter, then joiner and finally to stdout
-someMessagStream.pipe(splitter).pipe(joiner).pipe(process.stdout);
+someMessagStream
+    .pipe(splitter)
+    .pipe(joiner)
+    .pipe(process.stdout);
 ```
 
 ### Rewrite specific nodes
@@ -126,14 +129,14 @@ someMessagStream.pipe(splitter).pipe(joiner).pipe(process.stdout);
 
 Rewriter takes the following argument:
 
-  * **filterFunc** gets the current node as argument and starts processing it if `filterFunc` returns true
+* **filterFunc** gets the current node as argument and starts processing it if `filterFunc` returns true
 
 Once Rewriter finds a matching node, it emits the following event:
 
-  * *'node'* with an object argument `data`
-    * `data.node` includes the current node with headers
-    * `data.decoder` is the decoder stream that you can read data from
-    * `data.encoder` is the encoder stream that you can write data to. Whatever you write into that stream will be encoded properly and inserted as the content of the current node
+* _'node'_ with an object argument `data`
+  * `data.node` includes the current node with headers
+  * `data.decoder` is the decoder stream that you can read data from
+  * `data.encoder` is the encoder stream that you can write data to. Whatever you write into that stream will be encoded properly and inserted as the content of the current node
 
 ```javascript
 let Splitter = require('mailsplit').Splitter;
@@ -141,7 +144,7 @@ let Joiner = require('mailsplit').Joiner;
 let Rewriter = require('mailsplit').Rewriter;
 let splitter = new Splitter();
 let joiner = new Joiner();
-let rewriter = new Rewriter(node=>node.contentType === 'text/html');
+let rewriter = new Rewriter(node => node.contentType === 'text/html');
 rewriter.on('node', data => {
     // manage headers with node.headers
     node.headers.add('X-Processed-Time', new Date.toISOString());
@@ -149,7 +152,11 @@ rewriter.on('node', data => {
     data.decoder.pipe(data.encoder);
 });
 // pipe a message source to splitter, then rewriter, then joiner and finally to stdout
-someMessagStream.pipe(splitter).pipe(rewriter).pipe(joiner).pipe(process.stdout);
+someMessagStream
+    .pipe(splitter)
+    .pipe(rewriter)
+    .pipe(joiner)
+    .pipe(process.stdout);
 ```
 
 ### Stream specific nodes
@@ -158,14 +165,14 @@ someMessagStream.pipe(splitter).pipe(rewriter).pipe(joiner).pipe(process.stdout)
 
 Streamer takes the following argument:
 
-  * **filterFunc** gets the current node as argument and starts processing it if `filterFunc` returns true
+* **filterFunc** gets the current node as argument and starts processing it if `filterFunc` returns true
 
 Once Streamer finds a matching node, it emits the following event:
 
-  * *'node'* with an object argument `data`
-    * `data.node` includes the current node with headers (informational only, you can't modify it)
-    * `data.decoder` is the decoder stream that you can read data from
-    * `data.done` is a function you must call once you have processed the stream
+* _'node'_ with an object argument `data`
+  * `data.node` includes the current node with headers (informational only, you can't modify it)
+  * `data.decoder` is the decoder stream that you can read data from
+  * `data.done` is a function you must call once you have processed the stream
 
 ```javascript
 let Splitter = require('mailsplit').Splitter;
@@ -174,14 +181,18 @@ let Streamer = require('mailsplit').Streamer;
 let fs = require('fs');
 let splitter = new Splitter();
 let joiner = new Joiner();
-let streamer = new Streamer(node=>node.contentType === 'image/jpeg');
+let streamer = new Streamer(node => node.contentType === 'image/jpeg');
 streamer.on('node', data => {
     // write to file
     data.decoder.pipe(fs.createWriteStream(data.node.filename || 'image.jpg'));
     data.done();
 });
 // pipe a message source to splitter, then streamer, then joiner and finally to stdout
-someMessagStream.pipe(splitter).pipe(streamer).pipe(joiner).pipe(process.stdout);
+someMessagStream
+    .pipe(splitter)
+    .pipe(streamer)
+    .pipe(joiner)
+    .pipe(process.stdout);
 ```
 
 ### Benchmark

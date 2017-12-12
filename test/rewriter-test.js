@@ -23,8 +23,11 @@ module.exports['Recreate message and extract image'] = test => {
         data.decoder.pipe(data.encoder);
     });
 
-
-    let output = fs.createReadStream(__dirname + '/fixtures/large_image.eml').pipe(splitter).pipe(rewriter).pipe(joiner);
+    let output = fs
+        .createReadStream(__dirname + '/fixtures/large_image.eml')
+        .pipe(splitter)
+        .pipe(rewriter)
+        .pipe(joiner);
     output.on('data', chunk => {
         // use \n newlines
         //chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');
@@ -58,7 +61,11 @@ module.exports['Recreate message with updated format=flow text node'] = test => 
         });
     });
 
-    let output = fs.createReadStream(__dirname + '/fixtures/message.eml').pipe(splitter).pipe(rewriter).pipe(joiner);
+    let output = fs
+        .createReadStream(__dirname + '/fixtures/message.eml')
+        .pipe(splitter)
+        .pipe(rewriter)
+        .pipe(joiner);
     output.on('data', chunk => {
         // normalize to use \n newlines
         chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');
@@ -102,7 +109,6 @@ module.exports['Recreate message with large image very slowly'] = test => {
                         read();
                     }
                 }, 100);
-
             }, 100);
         };
 
@@ -121,7 +127,11 @@ module.exports['Recreate message with large image very slowly'] = test => {
         });
     });
 
-    let output = fs.createReadStream(__dirname + '/fixtures/large_image.eml').pipe(splitter).pipe(rewriter).pipe(joiner);
+    let output = fs
+        .createReadStream(__dirname + '/fixtures/large_image.eml')
+        .pipe(splitter)
+        .pipe(rewriter)
+        .pipe(joiner);
     output.on('data', chunk => {
         // normalize to use \n newlines
         // chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');
@@ -215,7 +225,6 @@ module.exports['Recreate message with large image one byte at a time'] = test =>
             };
 
             writeNextByte();
-
         }, 100);
     };
 
@@ -233,7 +242,10 @@ module.exports['Recreate message with large image one byte at a time'] = test =>
         }
     });
 
-    let output = input.pipe(splitter).pipe(rewriter).pipe(joiner);
+    let output = input
+        .pipe(splitter)
+        .pipe(rewriter)
+        .pipe(joiner);
     output.on('data', chunk => {
         // normalize to use \n newlines
         chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');

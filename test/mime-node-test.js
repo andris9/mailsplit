@@ -41,8 +41,9 @@ module.exports['Get filename from Content-Type'] = test => {
 
     mimeNode.addHeaderChunk(
         Buffer.from(
-            'Content-Type: application/octet-stream; name="=?UTF-8?Q?=C3=95=C3=84=C3=96=C3=9C?="\r\n' +
-            'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'));
+            'Content-Type: application/octet-stream; name="=?UTF-8?Q?=C3=95=C3=84=C3=96=C3=9C?="\r\nContent-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
+        )
+    );
 
     mimeNode.parseHeaders();
     test.equal(mimeNode.disposition, false);
@@ -56,9 +57,11 @@ module.exports['Get split filename from Content-Type'] = test => {
     mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Type: application/octet-stream;\r\n' +
-            '    name*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
-            '    name*1*=%C3%96%C3%9C\r\n' +
-            'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'));
+                '    name*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
+                '    name*1*=%C3%96%C3%9C\r\n' +
+                'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
+        )
+    );
 
     mimeNode.parseHeaders();
     test.equal(mimeNode.filename, 'ÕÄÖÜ');
@@ -69,9 +72,8 @@ module.exports['Get filename from Content-Disposition'] = test => {
     let mimeNode = new MimeNode();
 
     mimeNode.addHeaderChunk(
-        Buffer.from(
-            'Content-Disposition: inline; filename="=?UTF-8?Q?=C3=95=C3=84=C3=96=C3=9C?="\r\n' +
-            'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'));
+        Buffer.from('Content-Disposition: inline; filename="=?UTF-8?Q?=C3=95=C3=84=C3=96=C3=9C?="\r\nContent-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n')
+    );
 
     mimeNode.parseHeaders();
     test.equal(mimeNode.disposition, 'inline');
@@ -85,9 +87,11 @@ module.exports['Get split filename from Content-Disposition'] = test => {
     mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
-            '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
-            '    filename*1*=%C3%96%C3%9C\r\n' +
-            'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'));
+                '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
+                '    filename*1*=%C3%96%C3%9C\r\n' +
+                'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
+        )
+    );
 
     mimeNode.parseHeaders();
     test.equal(mimeNode.disposition, 'attachment');
@@ -101,15 +105,20 @@ module.exports['Set filename'] = test => {
     mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
-            '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
-            '    filename*1*=%C3%96%C3%9C\r\n' +
-            'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'));
+                '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
+                '    filename*1*=%C3%96%C3%9C\r\n' +
+                'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
+        )
+    );
 
     mimeNode.parseHeaders();
 
     mimeNode.setFilename('jõgeva.txt');
 
-    test.equal(mimeNode.getHeaders().toString(), 'Content-Disposition: attachment; filename*0*=utf-8\'\'j%C3%B5geva.txt\r\nContent-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n');
+    test.equal(
+        mimeNode.getHeaders().toString(),
+        'Content-Disposition: attachment; filename*0*=utf-8\'\'j%C3%B5geva.txt\r\nContent-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
+    );
 
     test.done();
 };
@@ -120,9 +129,11 @@ module.exports['Delete filename'] = test => {
     mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
-            '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
-            '    filename*1*=%C3%96%C3%9C\r\n' +
-            'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'));
+                '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
+                '    filename*1*=%C3%96%C3%9C\r\n' +
+                'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
+        )
+    );
 
     mimeNode.parseHeaders();
 
@@ -144,7 +155,10 @@ module.exports['Update existing filename'] = test => {
     mimeNode.parseHeaders();
 
     mimeNode.setFilename('jõgeva.txt');
-    test.equal(mimeNode.getHeaders().toString(), 'Content-Disposition: attachment; filename*0*=utf-8\'\'j%C3%B5geva.txt\r\nSubject: test\r\n jne\r\nContent-Type: text/plain;\r\n boundary=\"abc\"\r\nX-Mailer: 12345\r\n\r\n');
+    test.equal(
+        mimeNode.getHeaders().toString(),
+        'Content-Disposition: attachment; filename*0*=utf-8\'\'j%C3%B5geva.txt\r\nSubject: test\r\n jne\r\nContent-Type: text/plain;\r\n boundary="abc"\r\nX-Mailer: 12345\r\n\r\n'
+    );
     test.done();
 };
 

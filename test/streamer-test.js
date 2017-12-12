@@ -21,7 +21,11 @@ module.exports['Extract image from message stream'] = test => {
         data.decoder.on('end', () => setTimeout(() => data.done(), 2000));
     });
 
-    let output = fs.createReadStream(__dirname + '/fixtures/large_image.eml').pipe(splitter).pipe(streamer).pipe(joiner);
+    let output = fs
+        .createReadStream(__dirname + '/fixtures/large_image.eml')
+        .pipe(splitter)
+        .pipe(streamer)
+        .pipe(joiner);
     output.on('data', chunk => {
         // use \n newlines
         //chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');
@@ -52,7 +56,11 @@ module.exports['Extract image from message stream and return immediatelly'] = te
         data.done();
     });
 
-    let output = fs.createReadStream(__dirname + '/fixtures/large_image.eml').pipe(splitter).pipe(streamer).pipe(joiner);
+    let output = fs
+        .createReadStream(__dirname + '/fixtures/large_image.eml')
+        .pipe(splitter)
+        .pipe(streamer)
+        .pipe(joiner);
     output.on('data', chunk => {
         // use \n newlines
         //chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');

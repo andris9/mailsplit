@@ -6,7 +6,6 @@ const MessageSplitter = require('../lib/message-splitter');
 const MessageJoiner = require('../lib/message-joiner');
 
 module.exports['Split simple message'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
@@ -32,11 +31,9 @@ module.exports['Split simple message'] = test => {
     });
 
     splitter.end('Subject: test\nMime-Version: 1.0\n\nHello world!');
-
 };
 
 module.exports['Split simple message with line ending'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
@@ -62,11 +59,9 @@ module.exports['Split simple message with line ending'] = test => {
     });
 
     splitter.end('Subject: test\nMime-Version: 1.0\n\nHello world!\r\n');
-
 };
 
 module.exports['Split message with header only 1'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
@@ -91,7 +86,6 @@ module.exports['Split message with header only 1'] = test => {
 };
 
 module.exports['Split message with header only 2'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
@@ -116,7 +110,6 @@ module.exports['Split message with header only 2'] = test => {
 };
 
 module.exports['Split message with empty body'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
@@ -141,7 +134,6 @@ module.exports['Split message with empty body'] = test => {
 };
 
 module.exports['Split message with no header'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
@@ -170,13 +162,15 @@ module.exports['Split message with no header'] = test => {
 };
 
 module.exports['Split multipart message'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
         data => {
             test.equal(data.type, 'node');
-            test.equal(data.getHeaders().toString(), 'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n');
+            test.equal(
+                data.getHeaders().toString(),
+                'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n'
+            );
         },
         data => {
             test.equal(data.type, 'data');
@@ -184,7 +178,10 @@ module.exports['Split multipart message'] = test => {
         },
         data => {
             test.equal(data.type, 'node');
-            test.equal(data.getHeaders().toString(), 'Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\'test.pdf\'\r\n\r\n');
+            test.equal(
+                data.getHeaders().toString(),
+                'Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\'test.pdf\'\r\n\r\n'
+            );
         },
         data => {
             test.equal(data.type, 'body');
@@ -207,27 +204,33 @@ module.exports['Split multipart message'] = test => {
         test.done();
     });
 
-    splitter.end(Buffer.from('Content-type: multipart/mixed; boundary=ABC\r\n' +
-        'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
-        'Subject: ABCDEF\r\n' +
-        '\r\n' +
-        '--ABC\n' +
-        'Content-Type: application/octet-stream\r\n' +
-        'Content-Transfer-Encoding: base64\r\n' +
-        'Content-Disposition: attachment; filename=\'test.pdf\'\r\n' +
-        '\r\n' +
-        'AAECAwQFBg==\r\n' +
-        '--ABC--'));
+    splitter.end(
+        Buffer.from(
+            'Content-type: multipart/mixed; boundary=ABC\r\n' +
+                'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
+                'Subject: ABCDEF\r\n' +
+                '\r\n' +
+                '--ABC\n' +
+                'Content-Type: application/octet-stream\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                'Content-Disposition: attachment; filename=\'test.pdf\'\r\n' +
+                '\r\n' +
+                'AAECAwQFBg==\r\n' +
+                '--ABC--'
+        )
+    );
 };
 
 module.exports['Split multipart message without terminating boundary'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
         data => {
             test.equal(data.type, 'node');
-            test.equal(data.getHeaders().toString(), 'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n');
+            test.equal(
+                data.getHeaders().toString(),
+                'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n'
+            );
         },
         data => {
             test.equal(data.type, 'data');
@@ -235,7 +238,10 @@ module.exports['Split multipart message without terminating boundary'] = test =>
         },
         data => {
             test.equal(data.type, 'node');
-            test.equal(data.getHeaders().toString(), 'Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\'test.pdf\'\r\n\r\n');
+            test.equal(
+                data.getHeaders().toString(),
+                'Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\'test.pdf\'\r\n\r\n'
+            );
         },
         data => {
             test.equal(data.type, 'body');
@@ -254,20 +260,23 @@ module.exports['Split multipart message without terminating boundary'] = test =>
         test.done();
     });
 
-    splitter.end(Buffer.from('Content-type: multipart/mixed; boundary=ABC\r\n' +
-        'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
-        'Subject: ABCDEF\r\n' +
-        '\r\n' +
-        '--ABC\n' +
-        'Content-Type: application/octet-stream\r\n' +
-        'Content-Transfer-Encoding: base64\r\n' +
-        'Content-Disposition: attachment; filename=\'test.pdf\'\r\n' +
-        '\r\n' +
-        'AAECAwQFBg=='));
+    splitter.end(
+        Buffer.from(
+            'Content-type: multipart/mixed; boundary=ABC\r\n' +
+                'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
+                'Subject: ABCDEF\r\n' +
+                '\r\n' +
+                '--ABC\n' +
+                'Content-Type: application/octet-stream\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                'Content-Disposition: attachment; filename=\'test.pdf\'\r\n' +
+                '\r\n' +
+                'AAECAwQFBg=='
+        )
+    );
 };
 
 module.exports['Split and join mimetorture message'] = test => {
-
     let data = fs.readFileSync(__dirname + '/fixtures/mimetorture.eml');
 
     let splitter = new MessageSplitter();
@@ -284,11 +293,13 @@ module.exports['Split and join mimetorture message'] = test => {
         test.done();
     });
 
-    fs.createReadStream(__dirname + '/fixtures/mimetorture.eml').pipe(splitter).pipe(joiner);
+    fs
+        .createReadStream(__dirname + '/fixtures/mimetorture.eml')
+        .pipe(splitter)
+        .pipe(joiner);
 };
 
 module.exports['Fetch attachment from form-data'] = test => {
-
     let splitter = new MessageSplitter();
 
     let attachment = false;
@@ -320,13 +331,15 @@ module.exports['Fetch attachment from form-data'] = test => {
 };
 
 module.exports['Split multipart message with embedded message/rfc88'] = test => {
-
     let splitter = new MessageSplitter();
 
     let tests = [
         data => {
             test.equal(data.type, 'node');
-            test.equal(data.getHeaders().toString(), 'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n');
+            test.equal(
+                data.getHeaders().toString(),
+                'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n'
+            );
         },
         data => {
             test.equal(data.type, 'data');
@@ -361,23 +374,25 @@ module.exports['Split multipart message with embedded message/rfc88'] = test => 
         test.done();
     });
 
-    splitter.end(Buffer.from('Content-type: multipart/mixed; boundary=ABC\r\n' +
-        'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
-        'Subject: ABCDEF\r\n' +
-        '\r\n' +
-        '--ABC\n' +
-        'Content-Type: message/rfc822\r\n' +
-        '\r\n' +
-        'Content-Type: text/plain\r\n' +
-        'Content-Transfer-Encoding: base64\r\n' +
-        '\r\n' +
-        'AAECAwQFBg==\r\n' +
-        '--ABC--'));
+    splitter.end(
+        Buffer.from(
+            'Content-type: multipart/mixed; boundary=ABC\r\n' +
+                'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
+                'Subject: ABCDEF\r\n' +
+                '\r\n' +
+                '--ABC\n' +
+                'Content-Type: message/rfc822\r\n' +
+                '\r\n' +
+                'Content-Type: text/plain\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                '\r\n' +
+                'AAECAwQFBg==\r\n' +
+                '--ABC--'
+        )
+    );
 };
 
-
 module.exports['Split multipart message and ignore embedded message/rfc88'] = test => {
-
     let splitter = new MessageSplitter({
         ignoreEmbedded: true
     });
@@ -385,7 +400,10 @@ module.exports['Split multipart message and ignore embedded message/rfc88'] = te
     let tests = [
         data => {
             test.equal(data.type, 'node');
-            test.equal(data.getHeaders().toString(), 'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n');
+            test.equal(
+                data.getHeaders().toString(),
+                'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n'
+            );
         },
         data => {
             test.equal(data.type, 'data');
@@ -416,18 +434,22 @@ module.exports['Split multipart message and ignore embedded message/rfc88'] = te
         test.done();
     });
 
-    splitter.end(Buffer.from('Content-type: multipart/mixed; boundary=ABC\r\n' +
-        'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
-        'Subject: ABCDEF\r\n' +
-        '\r\n' +
-        '--ABC\n' +
-        'Content-Type: message/rfc822\r\n' +
-        '\r\n' +
-        'Content-Type: text/plain\r\n' +
-        'Content-Transfer-Encoding: base64\r\n' +
-        '\r\n' +
-        'AAECAwQFBg==\r\n' +
-        '--ABC--'));
+    splitter.end(
+        Buffer.from(
+            'Content-type: multipart/mixed; boundary=ABC\r\n' +
+                'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
+                'Subject: ABCDEF\r\n' +
+                '\r\n' +
+                '--ABC\n' +
+                'Content-Type: message/rfc822\r\n' +
+                '\r\n' +
+                'Content-Type: text/plain\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                '\r\n' +
+                'AAECAwQFBg==\r\n' +
+                '--ABC--'
+        )
+    );
 };
 
 module.exports['Strange split'] = test => {
@@ -440,7 +462,7 @@ module.exports['Strange split'] = test => {
         ignoreEmbedded: true
     });
 
-    splitter.on('data', ( /*data */ ) => {
+    splitter.on('data', (/*data */) => {
         //console.log('DATA', JSON.stringify(data.type==='node' ? data.headers.lines : data.value && data.value.toString()));
     });
 
@@ -461,12 +483,9 @@ module.exports['Strange split'] = test => {
 };
 
 module.exports['Fail on large header'] = test => {
-
     let splitter = new MessageSplitter({
         maxHeadSize: 5
     });
-
-    test.expect(1);
 
     splitter.on('data', () => {
         test.ok(false);
@@ -477,10 +496,5 @@ module.exports['Fail on large header'] = test => {
         test.done();
     });
 
-    splitter.on('end', () => {
-        test.ok(false);
-    });
-
     splitter.end('Subject: test\nMime-Version: 1.0\n\nHello world!');
-
 };

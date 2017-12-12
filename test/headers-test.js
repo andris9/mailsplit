@@ -53,25 +53,32 @@ module.exports['Get first header value'] = test => {
 module.exports['Get all rows'] = test => {
     let headerStr = 'Subject: test\nX-row: row1\nMIME-Version: 1.0\nX-Row: row2\nX-row: row3\nMessage-ID: <abc@def>\n\n';
     let headers = new Headers(Buffer.from(headerStr));
-    test.deepEqual(headers.getList('x-row'), [{
-        key: 'subject',
-        line: 'Subject: test'
-    }, {
-        key: 'x-row',
-        line: 'X-row: row1'
-    }, {
-        key: 'mime-version',
-        line: 'MIME-Version: 1.0'
-    }, {
-        key: 'x-row',
-        line: 'X-Row: row2'
-    }, {
-        key: 'x-row',
-        line: 'X-row: row3'
-    }, {
-        key: 'message-id',
-        line: 'Message-ID: <abc@def>'
-    }]);
+    test.deepEqual(headers.getList('x-row'), [
+        {
+            key: 'subject',
+            line: 'Subject: test'
+        },
+        {
+            key: 'x-row',
+            line: 'X-row: row1'
+        },
+        {
+            key: 'mime-version',
+            line: 'MIME-Version: 1.0'
+        },
+        {
+            key: 'x-row',
+            line: 'X-Row: row2'
+        },
+        {
+            key: 'x-row',
+            line: 'X-row: row3'
+        },
+        {
+            key: 'message-id',
+            line: 'Message-ID: <abc@def>'
+        }
+    ]);
     test.done();
 };
 
