@@ -1,3 +1,5 @@
+/* eslint no-console: 0 */
+
 'use strict';
 
 const mailsplit = require('../index.js');
@@ -22,7 +24,7 @@ let processNext = () => {
             time,
             avg,
             Math.round(bytes / (1024 * 1024) / time)
-        ); // eslint-disable-line no-console
+        );
         return;
     }
 

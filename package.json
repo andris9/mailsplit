@@ -1,6 +1,6 @@
 {
     "name": "mailsplit",
-    "version": "4.1.1",
+    "version": "4.1.2",
     "description": "Split email messages into an object stream",
     "main": "index.js",
     "directories": {
@@ -13,7 +13,7 @@
     "license": "EUPL-1.1",
     "dependencies": {
         "libmime": "3.1.0",
-        "libbase64": "1.0.1",
+        "libbase64": "1.0.2",
         "libqp": "1.1.0"
     },
     "devDependencies": {
@@ -24,5 +24,8 @@
         "grunt-eslint": "^20.1.0",
         "random-message": "^1.1.0"
     },
-    "files": ["lib", "index.js"]
+    "files": [
+        "lib",
+        "index.js"
+    ]
 }
