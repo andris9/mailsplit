@@ -180,7 +180,7 @@ module.exports['Split multipart message'] = test => {
             test.equal(data.type, 'node');
             test.equal(
                 data.getHeaders().toString(),
-                'Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\'test.pdf\'\r\n\r\n'
+                'Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\x27test.pdf\x27\r\n\r\n'
             );
         },
         data => {
@@ -213,7 +213,7 @@ module.exports['Split multipart message'] = test => {
                 '--ABC\n' +
                 'Content-Type: application/octet-stream\r\n' +
                 'Content-Transfer-Encoding: base64\r\n' +
-                'Content-Disposition: attachment; filename=\'test.pdf\'\r\n' +
+                'Content-Disposition: attachment; filename=\x27test.pdf\x27\r\n' +
                 '\r\n' +
                 'AAECAwQFBg==\r\n' +
                 '--ABC--'
@@ -240,7 +240,7 @@ module.exports['Split multipart message without terminating boundary'] = test =>
             test.equal(data.type, 'node');
             test.equal(
                 data.getHeaders().toString(),
-                'Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\'test.pdf\'\r\n\r\n'
+                'Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\x27test.pdf\x27\r\n\r\n'
             );
         },
         data => {
@@ -269,7 +269,7 @@ module.exports['Split multipart message without terminating boundary'] = test =>
                 '--ABC\n' +
                 'Content-Type: application/octet-stream\r\n' +
                 'Content-Transfer-Encoding: base64\r\n' +
-                'Content-Disposition: attachment; filename=\'test.pdf\'\r\n' +
+                'Content-Disposition: attachment; filename=\x27test.pdf\x27\r\n' +
                 '\r\n' +
                 'AAECAwQFBg=='
         )
@@ -293,8 +293,7 @@ module.exports['Split and join mimetorture message'] = test => {
         test.done();
     });
 
-    fs
-        .createReadStream(__dirname + '/fixtures/mimetorture.eml')
+    fs.createReadStream(__dirname + '/fixtures/mimetorture.eml')
         .pipe(splitter)
         .pipe(joiner);
 };
@@ -504,7 +503,7 @@ module.exports['Fail on large header'] = test => {
 };
 
 module.exports['Handle really large header'] = test => {
-    let splitter = new MessageSplitter();
+    let splitter = new MessageSplitter({ maxHeadSize: Infinity });
 
     splitter.on('data', () => {
         test.ok(true);
