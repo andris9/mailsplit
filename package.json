@@ -12,7 +12,7 @@
     "author": "Andris Reinman",
     "license": "EUPL-1.1+",
     "dependencies": {
-        "libmime": "4.0.0",
+        "libmime": "4.0.1",
         "libbase64": "1.0.3",
         "libqp": "1.1.0"
     },
