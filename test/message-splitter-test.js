@@ -391,6 +391,60 @@ module.exports['Split multipart message with embedded message/rfc88'] = test => 
     );
 };
 
+module.exports['Split multipart message with embedded message/rfc822 with header only'] = test => {
+    let splitter = new MessageSplitter();
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(
+                data.getHeaders().toString(),
+                'Content-Type: multipart/mixed; boundary="ABC"\r\n\r\n'
+            );
+        },
+        data => {
+            test.equal(data.type, 'data');
+            test.equal(data.value.toString(), '--ABC\r\n');
+        },
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-Type: message/rfc822\r\n\r\n');
+        },
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-Type: text/plain; charset=utf-8\r\nSubject: OK\r\n');
+        },
+        data => {
+            test.equal(data.type, 'data');
+            test.equal(data.value.toString(), '--ABC--');
+        }
+    ];
+    test.expect(15);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end(
+        Buffer.from(
+            'Content-Type: multipart/mixed; boundary="ABC"\r\n' +
+            '\r\n' +
+            '--ABC\r\n' +
+            'Content-Type: message/rfc822\r\n' +
+            '\r\n' +
+            'Content-Type: text/plain; charset=utf-8\r\n' +
+            'Subject: OK\r\n' +
+            '--ABC--'
+        )
+    );
+};
+
 module.exports['Split multipart message and ignore embedded message/rfc88'] = test => {
     let splitter = new MessageSplitter({
         ignoreEmbedded: true
