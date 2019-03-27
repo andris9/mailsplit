@@ -397,10 +397,7 @@ module.exports['Split multipart message with embedded message/rfc822 with header
     let tests = [
         data => {
             test.equal(data.type, 'node');
-            test.equal(
-                data.getHeaders().toString(),
-                'Content-Type: multipart/mixed; boundary="ABC"\r\n\r\n'
-            );
+            test.equal(data.getHeaders().toString(), 'Content-Type: multipart/mixed; boundary="ABC"\r\n\r\n');
         },
         data => {
             test.equal(data.type, 'data');
@@ -434,13 +431,13 @@ module.exports['Split multipart message with embedded message/rfc822 with header
     splitter.end(
         Buffer.from(
             'Content-Type: multipart/mixed; boundary="ABC"\r\n' +
-            '\r\n' +
-            '--ABC\r\n' +
-            'Content-Type: message/rfc822\r\n' +
-            '\r\n' +
-            'Content-Type: text/plain; charset=utf-8\r\n' +
-            'Subject: OK\r\n' +
-            '--ABC--'
+                '\r\n' +
+                '--ABC\r\n' +
+                'Content-Type: message/rfc822\r\n' +
+                '\r\n' +
+                'Content-Type: text/plain; charset=utf-8\r\n' +
+                'Subject: OK\r\n' +
+                '--ABC--'
         )
     );
 };

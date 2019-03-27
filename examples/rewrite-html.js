@@ -68,8 +68,7 @@ rewriter.on('node', data => {
 });
 
 // pipe all streams together
-fs
-    .createReadStream(__dirname + '/message.eml')
+fs.createReadStream(__dirname + '/message.eml')
     .pipe(splitter)
     .pipe(rewriter)
     .pipe(joiner)

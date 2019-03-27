@@ -57,7 +57,7 @@ module.exports['Get split filename from Content-Type'] = test => {
     mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Type: application/octet-stream;\r\n' +
-                '    name*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
+                "    name*0*=UTF-8''%C3%95%C3%84;\r\n" +
                 '    name*1*=%C3%96%C3%9C\r\n' +
                 'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
         )
@@ -87,7 +87,7 @@ module.exports['Get split filename from Content-Disposition'] = test => {
     mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
-                '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
+                "    filename*0*=UTF-8''%C3%95%C3%84;\r\n" +
                 '    filename*1*=%C3%96%C3%9C\r\n' +
                 'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
         )
@@ -105,7 +105,7 @@ module.exports['Set filename'] = test => {
     mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
-                '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
+                "    filename*0*=UTF-8''%C3%95%C3%84;\r\n" +
                 '    filename*1*=%C3%96%C3%9C\r\n' +
                 'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
         )
@@ -117,7 +117,7 @@ module.exports['Set filename'] = test => {
 
     test.equal(
         mimeNode.getHeaders().toString(),
-        'Content-Disposition: attachment; filename*0*=utf-8\'\'j%C3%B5geva.txt\r\nContent-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
+        "Content-Disposition: attachment; filename*0*=utf-8''j%C3%B5geva.txt\r\nContent-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n"
     );
 
     test.done();
@@ -129,7 +129,7 @@ module.exports['Delete filename'] = test => {
     mimeNode.addHeaderChunk(
         Buffer.from(
             'Content-Disposition:attachment;\r\n' +
-                '    filename*0*=UTF-8\'\'%C3%95%C3%84;\r\n' +
+                "    filename*0*=UTF-8''%C3%95%C3%84;\r\n" +
                 '    filename*1*=%C3%96%C3%9C\r\n' +
                 'Content-Transfer-Encoding: QUOTED-PRINTABLE\r\n\r\n'
         )
