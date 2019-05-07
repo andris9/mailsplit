@@ -1,6 +1,6 @@
 {
     "name": "mailsplit",
-    "version": "4.4.0",
+    "version": "4.4.1",
     "description": "Split email messages into an object stream",
     "main": "index.js",
     "directories": {
@@ -12,7 +12,7 @@
     "author": "Andris Reinman",
     "license": "(MIT OR EUPL-1.1+)",
     "dependencies": {
-        "libmime": "4.1.0",
+        "libmime": "4.1.1",
         "libbase64": "1.0.3",
         "libqp": "1.1.0"
     },
