@@ -34,7 +34,7 @@ module.exports['Recreate message and extract image'] = test => {
         msgHash.update(chunk);
     });
     output.on('end', () => {
-        test.equal(msgHash.digest('hex'), '3a5fa4280a54ebfc3ee956fb202a04ea');
+        test.equal(msgHash.digest('hex'), 'da699eb48c1aa91088481f1bebc994f2');
         test.equal(imgHash.digest('hex'), '393b91601d78359c99b5b667c2d5dda8');
 
         test.done();
@@ -74,7 +74,7 @@ module.exports['Recreate message with updated format=flow text node'] = test => 
     output.on('end', () => {
         msgHash = msgHash.digest('hex');
 
-        test.equal(msgHash, '09abdfab39ec308769e853207202a139');
+        test.equal(msgHash, '2349fd8178018c7886ee47538bb5edbf');
 
         test.done();
     });
@@ -140,7 +140,7 @@ module.exports['Recreate message with large image very slowly'] = test => {
     output.on('end', () => {
         msgHash = msgHash.digest('hex');
 
-        test.equal(msgHash, '3a5fa4280a54ebfc3ee956fb202a04ea');
+        test.equal(msgHash, 'da699eb48c1aa91088481f1bebc994f2');
 
         test.done();
     });
@@ -254,7 +254,7 @@ module.exports['Recreate message with large image one byte at a time'] = test =>
     output.on('end', () => {
         msgHash = msgHash.digest('hex');
 
-        test.equal(msgHash, 'db6223cc3a59b840558b6f1817c9953d');
+        test.equal(msgHash, '1b23ab848c9c6d2edba86e1d5a50bbf2');
 
         test.done();
     });
