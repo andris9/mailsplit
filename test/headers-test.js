@@ -50,6 +50,14 @@ module.exports['Get first header value'] = test => {
     test.done();
 };
 
+module.exports['Get header boolean if it exists'] = test => {
+    let headerStr = 'Subject: test\nX-row: row1\nMIME-Version: 1.0\nX-Row: row2\nX-row: row3\nMessage-ID: <abc@def>\n\n';
+    let headers = new Headers(Buffer.from(headerStr));
+    test.equal(headers.hasHeader('x-row'), true);
+    test.equal(headers.hasHeader('y-row'), false);
+    test.done();
+};
+
 module.exports['Get all rows'] = test => {
     let headerStr = 'Subject: test\nX-row: row1\nMIME-Version: 1.0\nX-Row: row2\nX-row: row3\nMessage-ID: <abc@def>\n\n';
     let headers = new Headers(Buffer.from(headerStr));
@@ -84,9 +92,11 @@ module.exports['Get all rows'] = test => {
 
 module.exports['Add new header'] = test => {
     let origHeaderStr = 'Subject: test\nMIME-Version: 1.0\nMessage-ID: <abc@def>\n\n';
-    let generatedHeaderStr = 'X-Test: tere\r\nSubject: test\r\nMIME-Version: 1.0\r\nMessage-ID: <abc@def>\r\n\r\n';
+    let generatedHeaderStr = 'X-Test: tere\r\nSubject: test\r\nMIME-Version: 1.0\r\nY-Test: foo\r\nMessage-ID: <abc@def>\r\n\r\n';
     let headers = new Headers(Buffer.from(origHeaderStr));
     headers.add('X-Test', 'tere');
+    headers.add('Y-Test', 'foo', 3);
+    test.equal(headers.lines.findIndex(line => line.key === 'y-test'), 3);
     test.equal(headers.build().toString(), generatedHeaderStr);
     test.done();
 };
@@ -105,6 +115,15 @@ module.exports['Replace header'] = test => {
     let generatedHeaderStr = 'Subject: test\r\nMIME-Version: New value\r\nMessage-ID: <abc@def>\r\n\r\n';
     let headers = new Headers(Buffer.from(origHeaderStr));
     headers.update('MIME-Version', 'New value');
+    test.equal(headers.build().toString(), generatedHeaderStr);
+    test.done();
+};
+
+module.exports['Replace header at relative key index'] = test => {
+    let origHeaderStr = 'Subject: test\nMIME-Version: 1.0\nMIME-Version: 2.0\nMIME-Version: 3.0\nMessage-ID: <abc@def>\n\n';
+    let generatedHeaderStr = 'Subject: test\r\nMIME-Version: 1.0\r\nMIME-Version: New value\r\nMIME-Version: 3.0\r\nMessage-ID: <abc@def>\r\n\r\n';
+    let headers = new Headers(Buffer.from(origHeaderStr));
+    headers.update('MIME-Version', 'New value', 1);
     test.equal(headers.build().toString(), generatedHeaderStr);
     test.done();
 };
