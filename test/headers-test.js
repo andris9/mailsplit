@@ -96,7 +96,10 @@ module.exports['Add new header'] = test => {
     let headers = new Headers(Buffer.from(origHeaderStr));
     headers.add('X-Test', 'tere');
     headers.add('Y-Test', 'foo', 3);
-    test.equal(headers.lines.findIndex(line => line.key === 'y-test'), 3);
+    test.equal(
+        headers.lines.findIndex(line => line.key === 'y-test'),
+        3
+    );
     test.equal(headers.build().toString(), generatedHeaderStr);
     test.done();
 };

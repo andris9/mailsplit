@@ -242,10 +242,7 @@ module.exports['Recreate message with large image one byte at a time'] = test =>
         }
     });
 
-    let output = input
-        .pipe(splitter)
-        .pipe(rewriter)
-        .pipe(joiner);
+    let output = input.pipe(splitter).pipe(rewriter).pipe(joiner);
     output.on('data', chunk => {
         // normalize to use \n newlines
         chunk = Buffer.from(chunk.toString('binary').replace(/\r/g, ''), 'binary');
