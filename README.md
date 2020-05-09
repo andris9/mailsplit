@@ -91,9 +91,10 @@ You can manipulate specific header keys as well using the `headers` object
 
 -   **node.headers.get(key)** returns an array of strings with all header rows for the selected key (these are full header lines, so key name is part of the row string, eg `["Subject: This is subject line"]`)
 -   **node.headers.getFirst(key)** returns string value of the specified header key (eg `"This is subject line"`)
+-   **node.headers.hasHeader(key)** returns boolean value if the specified header key exists
 -   **node.headers.add(key, value [,index])** adds a new header value to the specified index or to the top of the header block if index is not specified
--   **node.headers.update(key, value)** replaces a header value for the specified key
--   **node.headers.delete(key)** remove header value
+-   **node.headers.update(key, value, [,relativeKeyIndex])** replaces a header value to the specified relative key index (note that relative key index means relative to the same header key, eg if multiple exist and you specify `1` as the value, then it will update the second) or if no relative key index is specified, then it will remove all header value matches found for the key and append one at the last matching key index found with the specified value. If a relative key index is specified and it does not exist then it will be replaced (eg if there are two headers of `X-Foo-Bar` and you pass `2`, meaning it will update the third, no updates will be made since the third did not exist)
+-   **node.headers.remove(key)** remove header value
 -   **node.headers.mbox** If this is a MBOX formatted message then this value holds the prefix line (eg. "From MAILER-DAEMON Fri Jul 8 12:08:34 2011")
 -   **node.headers.mbox** If this is a POST form-data then this value holds the HTTP prefix line (eg. "POST /upload.php HTTP/1.1")
 
