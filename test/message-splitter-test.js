@@ -349,19 +349,15 @@ module.exports['Split multipart message with embedded message/rfc88'] = test => 
             test.equal(data.getHeaders().toString(), 'Content-Type: message/rfc822\r\n\r\n');
         },
         data => {
-            test.equal(data.type, 'node');
-            test.equal(data.getHeaders().toString(), 'Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\n\r\n');
-        },
-        data => {
             test.equal(data.type, 'body');
-            test.equal(data.value.toString(), 'AAECAwQFBg==');
+            test.equal(data.value.toString(), 'Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\n\r\nAAECAwQFBg==');
         },
         data => {
             test.equal(data.type, 'data');
             test.equal(data.value.toString(), '\r\n--ABC--');
         }
     ];
-    test.expect(18);
+    test.expect(15);
 
     splitter.on('data', data => {
         let nextTest = tests.shift();
@@ -408,12 +404,12 @@ module.exports['Split multipart message with embedded message/rfc822 with header
             test.equal(data.getHeaders().toString(), 'Content-Type: message/rfc822\r\n\r\n');
         },
         data => {
-            test.equal(data.type, 'node');
-            test.equal(data.getHeaders().toString(), 'Content-Type: text/plain; charset=utf-8\r\nSubject: OK\r\n');
+            test.equal(data.type, 'body');
+            test.equal(data.value.toString(), 'Content-Type: text/plain; charset=utf-8\r\nSubject: OK');
         },
         data => {
             test.equal(data.type, 'data');
-            test.equal(data.value.toString(), '--ABC--');
+            test.equal(data.value.toString(), '\r\n--ABC--');
         }
     ];
     test.expect(15);
