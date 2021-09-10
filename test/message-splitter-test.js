@@ -561,6 +561,71 @@ module.exports['Split multipart message and ignore embedded message/rfc88'] = te
     );
 };
 
+module.exports['Split multipart message and embedded message/rfc88'] = test => {
+    let splitter = new MessageSplitter({
+        ignoreEmbedded: false,
+        defaultInlineEmbedded: true
+    });
+
+    let tests = [
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(
+                data.getHeaders().toString(),
+                'Content-type: multipart/mixed; boundary=ABC\r\nX-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\nSubject: ABCDEF\r\n\r\n'
+            );
+        },
+        data => {
+            test.equal(data.type, 'data');
+            test.equal(data.value.toString(), '--ABC\n');
+        },
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-Type: message/rfc822\r\n\r\n');
+        },
+        data => {
+            test.equal(data.type, 'node');
+            test.equal(data.getHeaders().toString(), 'Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\n\r\n');
+        },
+        data => {
+            test.equal(data.type, 'body');
+            test.equal(data.value.toString(), 'AAECAwQFBg==');
+        },
+        data => {
+            test.equal(data.type, 'data');
+            test.equal(data.value.toString(), '\r\n--ABC--');
+        }
+    ];
+    test.expect(18);
+
+    splitter.on('data', data => {
+        let nextTest = tests.shift();
+        test.ok(nextTest);
+        nextTest(data);
+    });
+
+    splitter.on('end', () => {
+        test.done();
+    });
+
+    splitter.end(
+        Buffer.from(
+            'Content-type: multipart/mixed; boundary=ABC\r\n' +
+                'X-Test: =?UTF-8?Q?=C3=95=C3=84?= =?UTF-8?Q?=C3=96=C3=9C?=\r\n' +
+                'Subject: ABCDEF\r\n' +
+                '\r\n' +
+                '--ABC\n' +
+                'Content-Type: message/rfc822\r\n' +
+                '\r\n' +
+                'Content-Type: text/plain\r\n' +
+                'Content-Transfer-Encoding: base64\r\n' +
+                '\r\n' +
+                'AAECAwQFBg==\r\n' +
+                '--ABC--'
+        )
+    );
+};
+
 module.exports['Strange split'] = test => {
     let data = [
         'Content-Type: multipart/mixed;\r\n boundary="----sinikael-?=_1-14739302159560.25004998018597235"\r\nX-Laziness-Level: 1000\r\nFrom: Sender Name <test@zone.ee>\r\nTo: Andris Reinman <andris@127.0.0.1>\r\nSubject: Nodemailer is unicode friendly =?UTF-8?Q?=E2=9C=94?=\r\n (1473930215952)\r\nMessage-ID: <def930ed-3708-1dc3-d6b0-f993d9f11941@zone.ee>\r\nX-Mailer: nodemailer (2.6.0; +http://nodemailer.com/;\r\n SMTP/2.7.2[client:2.12.0])\r\nDate: Thu, 15 Sep 2016 09:03:35 +0000\r\nMIME-Version: 1.0',
