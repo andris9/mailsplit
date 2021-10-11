@@ -1,6 +1,6 @@
 {
     "name": "mailsplit",
-    "version": "5.2.0",
+    "version": "5.3.0",
     "description": "Split email messages into an object stream",
     "main": "index.js",
     "directories": {
@@ -17,12 +17,12 @@
         "libqp": "1.1.0"
     },
     "devDependencies": {
-        "eslint": "7.32.0",
+        "eslint": "8.0.0",
         "eslint-config-nodemailer": "1.2.0",
         "eslint-config-prettier": "8.3.0",
         "grunt": "1.4.1",
         "grunt-cli": "1.4.3",
-        "grunt-contrib-nodeunit": "3.0.0",
+        "grunt-contrib-nodeunit": "4.0.0",
         "grunt-eslint": "23.0.0",
         "random-message": "1.1.0"
     },
