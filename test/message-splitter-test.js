@@ -668,6 +668,7 @@ module.exports['Fail on large header'] = test => {
     splitter.once('error', err => {
         test.ok(err);
         test.done();
+        splitter.destroy(err);
     });
 
     splitter.once('end', () => {
