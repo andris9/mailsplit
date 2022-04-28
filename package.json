@@ -13,17 +13,17 @@
     "license": "(MIT OR EUPL-1.1+)",
     "dependencies": {
         "libbase64": "1.2.1",
-        "libmime": "5.0.0",
+        "libmime": "5.1.0",
         "libqp": "1.1.0"
     },
     "devDependencies": {
-        "eslint": "8.0.0",
+        "eslint": "8.14.0",
         "eslint-config-nodemailer": "1.2.0",
-        "eslint-config-prettier": "8.3.0",
-        "grunt": "1.4.1",
+        "eslint-config-prettier": "8.5.0",
+        "grunt": "1.5.2",
         "grunt-cli": "1.4.3",
         "grunt-contrib-nodeunit": "4.0.0",
-        "grunt-eslint": "23.0.0",
+        "grunt-eslint": "24.0.0",
         "random-message": "1.1.0"
     },
     "files": [
