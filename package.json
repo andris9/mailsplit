@@ -13,8 +13,8 @@
     "license": "(MIT OR EUPL-1.1+)",
     "dependencies": {
         "libbase64": "1.2.1",
-        "libmime": "5.1.0",
-        "libqp": "1.1.0"
+        "libmime": "5.2.0",
+        "libqp": "2.0.1"
     },
     "devDependencies": {
         "eslint": "8.14.0",
