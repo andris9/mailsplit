@@ -210,3 +210,5 @@ Done. 20000 messages [1244 MB] processed in 55.882 s. with average of 358 messag
 ## License
 
 Dual licensed under **MIT** or **EUPLv1.1+**
+
+> `mailsplit` is part of the Zone Mail Suite (ZMS). Suite of programs and modules for an efficient, fast and modern email server.
