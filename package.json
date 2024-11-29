@@ -1,6 +1,6 @@
 {
     "name": "mailsplit",
-    "version": "5.4.1",
+    "version": "5.4.2",
     "description": "Split email messages into an object stream",
     "main": "index.js",
     "directories": {
