@@ -1,7 +1,7 @@
 {
     "rules": {
-        "indent": 0,
-        "no-await-in-loop": 0
+        "no-redeclare": 0,
+        "no-prototype-builtins": 0
     },
     "extends": ["nodemailer", "prettier"],
     "parserOptions": {
